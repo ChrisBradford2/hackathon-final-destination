@@ -46,9 +46,9 @@
 }
 
 .main-content {
-  margin-left: 60px;
-  padding-top: 60px;
-  padding: 20px;
+  margin-left: 3.75rem;
+  padding-top: 3.75rem;
+  padding: 1.25rem  ;
   flex: 1;
   background-color: #eaeaea;
   height: 100vh;
@@ -57,5 +57,5 @@
 }
 
 .sidebar:hover ~ .main-content {
-  margin-left: 200px;
+  margin-left: 12.50rem;
 }
