@@ -1,4 +1,6 @@
 Flask
+flask_sqlalchemy
+psycopg2-binary
 speechrecognition
 transformers
 torch
