@@ -1,3 +1,4 @@
+from .models.Audio import Audio
 from flask import Blueprint, request, jsonify, current_app as app
 from .transcription import transcribe_audio, transcribe_audio_from_url
 from .sentiment_analysis import analyze_sentiment
@@ -56,6 +57,48 @@ def transcribe_url():
         
         transcription = transcribe_audio_from_url(url)
         return jsonify({"transcription": transcription})
+    except Exception as e:
+        app.logger.error(f"An error occurred: {str(e)}")
+        return f"An error occurred: {str(e)}", 500
+    
+@main.route('/audios', methods=['GET'])
+def get_audios():
+    try:
+        audios = Audio.query.all()
+        audio_list = []
+        for audio in audios:
+            audio_data = {
+                'id': audio.id,
+                'createdAt': audio.createdAt,
+                'audio': audio.audio,
+                'isAnalysed': audio.isAnalysed,
+                'transcription': audio.transcription,
+                'isInNeed': audio.isInNeed,
+                'url': audio.url
+            }
+            audio_list.append(audio_data)
+        return jsonify(audio_list), 200
+    except Exception as e:
+        app.logger.error(f"An error occurred: {str(e)}")
+        return f"An error occurred: {str(e)}", 500
+    
+@main.route('/audios/<int:audio_id>', methods=['GET'])
+def get_audio(audio_id):
+    try:
+        audio = Audio.query.get(audio_id)
+        if not audio:
+            return "Audio not found", 404
+        
+        audio_data = {
+            'id': audio.id,
+            'createdAt': audio.createdAt,
+            'audio': audio.audio,
+            'isAnalysed': audio.isAnalysed,
+            'transcription': audio.transcription,
+            'isInNeed': audio.isInNeed,
+            'url': audio.url
+        }
+        return jsonify(audio_data), 200
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
         return f"An error occurred: {str(e)}", 500
