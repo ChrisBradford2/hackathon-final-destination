@@ -1,10 +1,8 @@
-name: React CI
+name: React CD
 
 on:
   push:
     branches: [ "main" ]
-    paths:
-      - 'front/**'
 
 jobs:
   deploy:
