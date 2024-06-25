@@ -6,3 +6,8 @@ transformers
 torch
 openai-whisper
 watchdog
+spacy
+vaderSentiment
+boto3
+python-dotenv
+
