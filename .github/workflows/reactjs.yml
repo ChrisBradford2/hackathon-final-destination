@@ -1,0 +1,62 @@
+name: React CI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'front/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'front/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: 'front/package-lock.json'  # Spécifier le chemin complet du fichier package-lock.json si nécessaire
+
+    - name: Install dependencies
+      run: npm install
+      working-directory: 'front/'
+
+    - name: Build
+      run: npm run build --if-present
+      working-directory: 'front/'
+
+    - name: Cache build files
+      uses: actions/cache@v2
+      with:
+        path: front/dist
+        key: ${{ runner.os }}-build-${{ hashFiles('front/dist/**') }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+      - name: Cache build files
+        uses: actions/cache@v2
+        with:
+          path: front/dist
+          key: ${{ runner.os }}-build-${{ hashFiles('front/dist/**') }}
+      - run: npx gh-pages -d dist
