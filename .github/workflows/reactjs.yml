@@ -59,7 +59,7 @@ jobs:
       - name: Install dependencies
         run: npm install
         working-directory: 'front/'
-  
+
       - name: Deploy to GitHub Pages
         run: npm run deploy
         working-directory: 'front/'
