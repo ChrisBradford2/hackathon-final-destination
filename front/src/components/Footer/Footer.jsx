@@ -4,7 +4,7 @@ import './Footer.css';
 const Footer = () => {
   return (
     <footer>
-      <h1>My React Footer App</h1>
+      {/* <h1>My React Footer App</h1> */}
     </footer>
   );
 };
