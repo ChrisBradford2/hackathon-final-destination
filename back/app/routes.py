@@ -1,8 +1,7 @@
-from flask import current_app as app
-from .transcription import transcribe_audio
+from flask import Blueprint, request, jsonify, current_app as app
+from .transcription import transcribe_audio, transcribe_audio_from_url
 from .sentiment_analysis import analyze_sentiment
 from .upload_file import upload_file
-from flask import request, jsonify, Blueprint
 
 main = Blueprint('main', __name__)
 
@@ -43,6 +42,20 @@ def upload_audio():
         else:
             app.logger.error(f"File upload failed for {s3_file_name}")
             return "File upload failed", 500
+    except Exception as e:
+        app.logger.error(f"An error occurred: {str(e)}")
+        return f"An error occurred: {str(e)}", 500
+
+@main.route('/transcribe_url', methods=['POST'])
+def transcribe_url():
+    try:
+        data = request.get_json()
+        url = data.get('url')
+        if not url:
+            return "No URL provided", 400
+        
+        transcription = transcribe_audio_from_url(url)
+        return jsonify({"transcription": transcription})
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
         return f"An error occurred: {str(e)}", 500

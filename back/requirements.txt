@@ -1,11 +1,11 @@
 Flask
 flask_sqlalchemy
 flask_cors
+flask_migrate
 psycopg2-binary
 transformers
 torch
 openai-whisper
-spacy
-vaderSentiment
 boto3
 python-dotenv
+soundfile
