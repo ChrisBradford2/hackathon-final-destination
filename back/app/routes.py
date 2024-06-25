@@ -102,3 +102,20 @@ def get_audio(audio_id):
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
         return f"An error occurred: {str(e)}", 500
+
+@main.route('/transcribe_audio/<int:audio_id>', methods=['POST'])
+def transcribe_audio_by_id(audio_id):
+    try:
+        audio = Audio.query.get(audio_id)
+        if not audio:
+            return "Audio not found", 404
+        
+        transcription = transcribe_audio_from_url(audio.url)
+        audio.transcription = transcription
+        audio.isAnalysed = True
+        app.logger.info(f"Transcription for audio {audio_id} completed")
+
+        return jsonify({"transcription": transcription}), 200
+    except Exception as e:
+        app.logger.error(f"An error occurred: {str(e)}")
+        return f"An error occurred: {str(e)}", 500
