@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify, current_app as app
 from .transcription import transcribe_audio, transcribe_audio_from_url
 from .sentiment_analysis import analyze_sentiment
 from .upload_file import upload_file
+from . import db
 
 main = Blueprint('main', __name__)
 
@@ -113,6 +114,7 @@ def transcribe_audio_by_id(audio_id):
         transcription = transcribe_audio_from_url(audio.url)
         audio.transcription = transcription
         audio.isAnalysed = True
+        db.session.commit()  # Sauvegarder les changements dans la base de données
         app.logger.info(f"Transcription for audio {audio_id} completed")
 
         return jsonify({"transcription": transcription}), 200
