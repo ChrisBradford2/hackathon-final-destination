@@ -55,9 +55,11 @@ jobs:
           node-version: '18.x'
           cache: 'npm'
           cache-dependency-path: 'front/package-lock.json'
-      - name: Cache build files
-        uses: actions/cache@v2
-        with:
-          path: front/dist
-          key: ${{ runner.os }}-build-${{ hashFiles('front/dist/**') }}
-      - run: npx gh-pages -d dist
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: 'front/'
+  
+      - name: Deploy to GitHub Pages
+        run: npm run deploy
+        working-directory: 'front/'
