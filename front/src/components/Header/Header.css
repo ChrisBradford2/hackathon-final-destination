@@ -1,0 +1,65 @@
+.header {
+    background-color: #002855;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 1.25rem;
+    width: 100%;
+    height: 3.75rem;
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    box-sizing: border-box;
+  }
+  
+  .search-bar {
+    flex: 1;
+  }
+
+  .logo {
+    font-size: 1.50rem;
+    font-weight: bold;
+    margin-right: 1.25rem;
+  }
+
+  .search-bar input {
+    width: 50%;
+    padding: 0.63rem;
+    border: none;
+    border-radius: 4px;
+  }
+  
+  .actions {
+    display: flex;
+    align-items: center;
+  }
+  
+  .actions button {
+    background-color: #0066CC;
+    color: white;
+    border: none;
+    padding: 0.63rem 1.25rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 1.25rem;
+  }
+  
+  .icon {
+    margin: 0 0.63rem;
+    cursor: pointer;
+    font-size: 1.13rem;
+  }
+  
+  .user-icon {
+    width: 2.50rem;
+    height: 2.50rem;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  
+  .user-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  

@@ -1,4 +1,4 @@
-#root {
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
@@ -39,4 +39,23 @@
 
 .read-the-docs {
   color: #888;
+} */
+
+.app {
+  display: flex;
+}
+
+.main-content {
+  margin-left: 3.75rem;
+  padding-top: 3.75rem;
+  padding: 1.25rem  ;
+  flex: 1;
+  background-color: #eaeaea;
+  height: 100vh;
+  box-sizing: border-box;
+  transition: margin-left 0.3s;
+}
+
+.sidebar:hover ~ .main-content {
+  margin-left: 12.50rem;
 }
