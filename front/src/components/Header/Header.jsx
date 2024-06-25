@@ -18,7 +18,7 @@ const Header = () => {
         <FontAwesomeIcon icon={faUsers} className="icon" />
         <FontAwesomeIcon icon={faLock} className="icon" />
         <div className="user-icon">
-          <img src="../src/assets/images/Genna.png" alt="User" />
+          <img src="/hackathon-final-destination/src/assets/images/Genna.png" alt="User" />
         </div>
       </div>
     </header>

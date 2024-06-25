@@ -198,7 +198,7 @@ const Home = () => {
           </thead>
           <tbody>
             {currentItems.map((item, index) => (
-              <tr key={index} className="bg-white border-bhover:bg-gray-50 odd:bg-white even:bg-gray-50">
+              <tr key={index} className="bg-white border-bhover:bg-gray-50 odd:bg-white even:bg-gray-50 text-xs">
                 <td className="p-4">
                   <div className="flex items-center">
                     <input

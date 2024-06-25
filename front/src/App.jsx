@@ -5,6 +5,7 @@ import Footer from './components/Footer/Footer';
 import Home from './pages/Home/Home';
 import './App.css';
 import Sidebar from './components/Sidebar/Sidebar';
+import Transcription from './pages/Transcriptions/Transcription';
 
 const App = () => {
   const [sidebarWidth, setSidebarWidth] = useState(112);
@@ -42,7 +43,8 @@ const App = () => {
         <Header />
         <Sidebar setSidebarWidth={setSidebarWidth}/>
         <Routes>
-          <Route path="/" element={<Home/>} />
+          <Route path="/hackathon-final-destination/" element={<Home/>} />
+          <Route path="/hackathon-final-destination/transcription" element={<Transcription/>} />
         </Routes>
         <Footer />
       </div>
