@@ -3,7 +3,7 @@ import './Home.css';
 import DropdownTab from '../../components/Dropdown/DropdownTab';
 import ModalAudio from '../../components/Modal/ModalAudio';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle, faFileAudio } from '@fortawesome/free-solid-svg-icons';
+import { faFileAudio } from '@fortawesome/free-solid-svg-icons';
 
 const Home = () => {
   // Example data for table rows
@@ -198,7 +198,7 @@ const Home = () => {
           </thead>
           <tbody>
             {currentItems.map((item, index) => (
-              <tr key={index} className="bg-white border-b   hover:bg-gray-50 ">
+              <tr key={index} className="bg-white border-bhover:bg-gray-50 odd:bg-white even:bg-gray-50">
                 <td className="p-4">
                   <div className="flex items-center">
                     <input
