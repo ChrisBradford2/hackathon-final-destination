@@ -20,4 +20,4 @@ RUN chmod +x /app/wait-for-it.sh
 
 EXPOSE 5000
 
-CMD ["./wait-for-it.sh", "database", "5432", "--", "python", "run.py"]
+CMD ["./wait-for-it.sh", "database", "5432", "--", "flask", "run", "--host=0.0.0.0", "--port=5000", "--reload"]

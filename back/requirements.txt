@@ -1,11 +1,13 @@
 Flask
+Flask-Migrate
 flask_sqlalchemy
 flask_cors
+gunicorn
 psycopg2-binary
 transformers
 torch
 openai-whisper
-spacy
-vaderSentiment
+watchdog
 boto3
 python-dotenv
+
