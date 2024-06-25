@@ -7,3 +7,5 @@ torch
 openai-whisper
 spacy
 vaderSentiment
+boto3
+python-dotenv
