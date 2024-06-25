@@ -25,7 +25,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: 'front/package-lock.json'  # Spécifier le chemin complet du fichier package-lock.json si nécessaire
+        cache-dependency-path: 'front/package-lock.json'
 
     - name: Install dependencies
       run: npm install
@@ -54,6 +54,7 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'npm'
+          cache-dependency-path: 'front/package-lock.json'
       - name: Cache build files
         uses: actions/cache@v2
         with:
