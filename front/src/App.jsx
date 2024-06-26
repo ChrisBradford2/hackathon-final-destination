@@ -8,6 +8,7 @@ import Sidebar from './components/Sidebar/Sidebar';
 import Transcription from './pages/Transcriptions/Transcription';
 import Dashboard from './pages/DashboardActivité/Dashboard';
 import Error404 from './pages/Errors/Error404';
+import Upload from './pages/Upload/Upload';
 
 const App = () => {
   const [sidebarWidth, setSidebarWidth] = useState(112);
@@ -46,6 +47,7 @@ const App = () => {
         <Sidebar setSidebarWidth={setSidebarWidth}/>
         <Routes>
           <Route path="/hackathon-final-destination/" element={<Home/>} />
+          <Route path="/hackathon-final-destination/upload" element={<Upload/>} />
           <Route path="/hackathon-final-destination/transcription" element={<Transcription/>} />
           <Route path="/hackathon-final-destination/mon-activite" element={<Dashboard/>} />
           <Route path="*" element={<Error404 />} />

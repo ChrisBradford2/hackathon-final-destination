@@ -1,18 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ReactMediaRecorder } from 'react-media-recorder';
 //import './Transcription.css';
 
 const Transcription = () => {
   const [audioFile, setAudioFile] = useState(null);
   const [transcription, setTranscription] = useState('');
+  const [error, setError] = useState(null);
+  
 
   const handleFileChange = (event) => {
     setAudioFile(event.target.files[0]);
   };
 
   const handleUpload = () => {
-    //console.log('Uploading file:', audioFile);
-    setTranscription('Ceci est une transcription simulée pour le fichier audio téléchargé.');
+    if (!audioFile) {
+      alert('Veuillez sélectionner un fichier audio');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('audio', audioFile);
+
+    fetch('http://localhost:5001/upload_audio', {
+      method: 'POST',
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setTranscription(data.transcription);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (
