@@ -2,11 +2,8 @@ import React from 'react';
 import './Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeadset, faBullhorn, faUsers, faLock } from '@fortawesome/free-solid-svg-icons';
-<<<<<<< feature/ui
 import { Link } from 'react-router-dom';
-=======
 import iconImage from '../../assets/images/Genna.png'
->>>>>>> main
 
 const Header = () => {
   return (
@@ -25,11 +22,7 @@ const Header = () => {
         <FontAwesomeIcon icon={faUsers} className="icon" />
         <FontAwesomeIcon icon={faLock} className="icon" />
         <div className="user-icon">
-<<<<<<< feature/ui
-          <img src="/hackathon-final-destination/src/assets/images/Genna.png" alt="User" />
-=======
           <img src={iconImage} alt="User" />
->>>>>>> main
         </div>
       </div>
     </header>
