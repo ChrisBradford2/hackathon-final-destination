@@ -1,5 +1,5 @@
 from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
-from flask import current_app as app
+from flask import current_app as app, jsonify
 from .transcription import transcribe_audio
 import os
 import requests
@@ -29,48 +29,6 @@ def analyze_sentiment(text):
         "score": result['score']
     }
     return sentiment
-    sentiment_pipeline = pipeline("sentiment-analysis", model="nlptown/bert-base-multilingual-uncased-sentiment")
-    result = sentiment_pipeline(text)
-    return result[0]
-
-
-def refine_transcription(transcription):
-    system_prompt = """Vous êtes un assistant avancé de raffinement de texte spécialisé dans l'analyse des transcriptions audio pour en vérifier la cohérence et l'exactitude.
-    Votre tâche consiste à examiner la transcription pour y détecter d'éventuelles erreurs, telles que des mots mal transcrits mais qui sonnent similaires aux mots corrects.
-    Corrigez ces erreurs en remplaçant les mots incohérents par les mots appropriés qui correspondent au contexte de la transcription.
-    Votre objectif est de produire la transcription la plus précise et contextuellement appropriée possible.
-    Le retour doit être au format JSON 
-    { 
-        refine-transcription: 
-    }."""
-
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": "Voici la transcription du retour du patient : " + transcription}
-    ]
-
-    # Make a request to the Llama API
-    url = "http://host.docker.internal:11434/api/chat"
-
-    headers = {
-        "Content-Type": "application/json"
-    }
-    data = {
-        "model": "phi3:3.8b",
-        "messages": messages,
-        "stream": False
-    }
-
-    response = requests.post(url, headers=headers, data=json_py.dumps(data))
-
-    if response.status_code == 200:
-        response_data = response.json()
-        app.logger.info(f"Received response from Llama API: {response_data}")
-        generated_text = (response_data["message"]["content"])
-
-        return generated_text
-
-import json as json_py
 
 def refine_transcription(transcription):
     system_prompt = """Vous êtes un assistant avancé de raffinement de texte spécialisé dans l'analyse des transcriptions audio pour en vérifier la cohérence et l'exactitude.
