@@ -1,7 +1,7 @@
 from .models.Audio import Audio
-from flask import Blueprint, request, jsonify, current_app as app
+from flask import Blueprint, request, jsonify, current_app as app, json
 from .transcription import transcribe_audio, transcribe_audio_from_url
-from .sentiment_analysis import analyze_sentiment, refine_transcription, process_audio
+from .sentiment_analysis import analyze_sentiment, refine_transcription
 from .upload_file import upload_file
 from . import db
 
@@ -11,23 +11,20 @@ main = Blueprint('main', __name__)
 def index():
     return "Hello World!"
 
-@app.route('/analyse', methods=['POST'])
-def transcribe():
-    audio_file = request.files['file']
-    print(f"Received audio file: {audio_file.filename}")  
-    return process_audio(audio_file)
+# @main.route('/transcribe', methods=['POST'])
+# def transcribe():
+#     audio_file = request.files['file']
+#     transcription = transcribe_audio(audio_file)
+#     return jsonify({"transcription": transcription})
 
-@main.route('/refine_transcription', methods=['POST'])
-def refine_transcript():
-    data = request.json
-    transcription = data.get('transcription')
-    return refine_transcription(transcription)
+# @main.route('/analyze_sentiment', methods=['POST'])
+# def sentiment_analysis():
+#     text = request.json.get('text')
+#     sentiment = analyze_sentiment(text)
 
-@main.route('/analyze_sentiment', methods=['POST'])
-def sentiment_analysis():
-    text = request.json.get('text')
-    sentiment = analyze_sentiment(text)
-    return jsonify({"sentiment": sentiment})
+#     response = json.dumps({"sentiment": sentiment}, ensure_ascii=False)
+    
+#     return app.response_class(response, content_type='application/json; charset=utf-8')
 
 @main.route('/upload_audio', methods=['POST'])
 def upload_audio():
@@ -118,12 +115,33 @@ def transcribe_audio_by_id(audio_id):
             return "Audio not found", 404
         
         transcription = transcribe_audio_from_url(audio.url)
-        audio.transcription = transcription
+        refined_transcription = refine_transcription(transcription)
+        audio.transcription = refined_transcription
         audio.isAnalysed = True
         db.session.commit()  # Sauvegarder les changements dans la base de données
         app.logger.info(f"Transcription for audio {audio_id} completed")
 
         return jsonify({"transcription": transcription}), 200
+    except Exception as e:
+        app.logger.error(f"An error occurred: {str(e)}")
+        return f"An error occurred: {str(e)}", 500
+    
+
+@main.route('/analyze/<int:audio_id>', methods=['POST'])
+def analyze_audio(audio_id):
+    try:
+        audio = Audio.query.get(audio_id)
+        if not audio:
+            return "Audio not found", 404
+        
+        sentiment = analyze_sentiment(audio.transcription)
+        if (sentiment['label'] == 'Négatif' or sentiment['label'] == 'Très négatif'):
+            audio.isInNeed = True
+        else :
+            audio.isInNeed = False
+        audio.isAnalysed = True
+        db.session.commit()  # Sauvegarder les changements dans la base de données
+        app.logger.info(f"Sentiment analysis for audio {audio_id} completed")
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
         return f"An error occurred: {str(e)}", 500
