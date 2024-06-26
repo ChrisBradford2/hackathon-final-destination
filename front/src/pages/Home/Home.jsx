@@ -131,7 +131,7 @@ const Home = () => {
                   </div>
                 </td>
                 <td className="p-3">
-                  <Link to={`/transcription/${item.id}`} className="text-blue-600 hover:text-blue-800 cursor-pointer">
+                  <Link to={`/hackathon-final-destination/${item.id}`} className="text-blue-600 hover:text-blue-800 cursor-pointer">
                     <FontAwesomeIcon icon={faFileAudio} className="text-blue-600 hover:text-blue-800 cursor-pointer" />
                   </Link>
                 </td>

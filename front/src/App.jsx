@@ -7,6 +7,7 @@ import './App.css';
 import Sidebar from './components/Sidebar/Sidebar';
 import Transcription from './pages/Transcriptions/Transcription';
 import Upload from './pages/Upload/Upload';
+import Audio from './pages/Audio/Audio';
 
 const App = () => {
   const [sidebarWidth, setSidebarWidth] = useState(112);
@@ -47,6 +48,7 @@ const App = () => {
           <Route path="/hackathon-final-destination/" element={<Home/>} />
           <Route path="/hackathon-final-destination/upload" element={<Upload/>} />
           <Route path="/hackathon-final-destination/transcription" element={<Transcription/>} />
+          <Route path="/hackathon-final-destination/:id" element={<Audio/>} />
         </Routes>
         <Footer />
       </div>
