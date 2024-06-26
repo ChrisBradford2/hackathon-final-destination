@@ -9,6 +9,7 @@ import Transcription from './pages/Transcriptions/Transcription';
 import Dashboard from './pages/DashboardActivité/Dashboard';
 import Error404 from './pages/Errors/Error404';
 import Upload from './pages/Upload/Upload';
+import Audio from './pages/Audio/Audio';
 
 const App = () => {
   const [sidebarWidth, setSidebarWidth] = useState(112);
@@ -52,6 +53,7 @@ const App = () => {
           <Route path="/hackathon-final-destination/mon-activite" element={<Dashboard/>} />
           <Route path="*" element={<Error404 />} />
           
+          <Route path="/hackathon-final-destination/:id" element={<Audio/>} />
         </Routes>
         <Footer />
       </div>
