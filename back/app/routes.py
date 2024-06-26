@@ -96,14 +96,15 @@ def get_audio(audio_id):
         app.logger.error(f"An error occurred: {str(e)}")
         return f"An error occurred: {str(e)}", 500
 
-@main.route('/transcribe_audio/<int:audio_id>', methods=['POST'])
-def transcribe_audio_by_id(audio_id):
+@main.route('/process_audio/<int:audio_id>', methods=['POST'])
+def process_audio(audio_id):
     try:
         audio = Audio.query.get(audio_id)
         if not audio:
             return jsonify({"error": "Audio not found"}), 404
         
         try:
+            # Transcribe the audio
             transcription = transcribe_audio_from_url(audio.url)
             refined_transcription_data = refine_transcription(transcription)
             if "error" in refined_transcription_data:
@@ -113,58 +114,49 @@ def transcribe_audio_by_id(audio_id):
         except Exception as transcribe_error:
             refined_transcription = f"Error during transcription refinement. Status code: 404"
             app.logger.error(f"Transcription error for audio {audio_id}: {str(transcribe_error)}")
-        
-        # Store the refined transcription as plain text
+            return jsonify({"error": refined_transcription}), 500
+
+        # Store the refined transcription
         audio.transcription = refined_transcription
-        audio.isAnalysed = True
-        
-        db.session.commit()  # Save changes to the database
-        app.logger.info(f"Transcription for audio {audio_id} completed")
 
-        return jsonify({"transcription": refined_transcription}), 200
-    except Exception as e:
-        app.logger.error(f"An error occurred: {str(e)}")
-        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+        try:
+            # Analyze the sentiment
+            sentiment_result = analyze_sentiment(audio.transcription)
+            sentiment_label = Label[sentiment_result['label'].replace(' ', '_').upper()]
+            
+            # Create and save the sentiment record
+            sentiment = Sentiments(
+                label=sentiment_label,
+                score=sentiment_result['score'],
+                audio_id=audio_id
+            )
+            
+            db.session.add(sentiment)
 
-@main.route('/analyze/<int:audio_id>', methods=['POST'])
-def analyze_audio(audio_id):
-    try:
-        audio = Audio.query.get(audio_id)
-        if not audio:
-            return jsonify({"error": "Audio not found"}), 404
-        
-        if audio.transcription is None:
-            return jsonify({"error": "Transcription not found"}), 404
-        
-        sentiment_result = analyze_sentiment(audio.transcription)
-        sentiment_label = Label[sentiment_result['label'].replace(' ', '_').upper()]
-        
-        # Create and save the sentiment record
-        sentiment = Sentiments(
-            label=sentiment_label,
-            score=sentiment_result['score'],
-            audio_id=audio_id
-        )
-        
-        db.session.add(sentiment)
+            if sentiment.label in [Label.NEGATIF, Label.TRES_NEGATIF]:
+                audio.isInNeed = True
+            else:
+                audio.isInNeed = False
 
-        if sentiment.label in [Label.NEGATIF, Label.TRES_NEGATIF]:
-            audio.isInNeed = True
-        else:
-            audio.isInNeed = False
-        
-        audio.isAnalysed = True
-        db.session.commit()  # Save changes to the database
-        
-        app.logger.info(f"Sentiment analysis for audio {audio_id} completed")
+            audio.isAnalysed = True
+            db.session.commit()  # Save changes to the database
+            
+            app.logger.info(f"Processing for audio {audio_id} completed")
 
-        # Convert the sentiment result to a JSON-serializable format
-        sentiment_data = {
-            "label": sentiment.label.name,
-            "score": sentiment.score
-        }
+            # Convert the sentiment result to a JSON-serializable format
+            sentiment_data = {
+                "label": sentiment.label.name,
+                "score": sentiment.score
+            }
 
-        return jsonify({"message": "Sentiment analysis completed", "sentiment": sentiment_data}), 200
+            return jsonify({
+                "message": "Processing completed",
+                "transcription": refined_transcription,
+                "sentiment": sentiment_data
+            }), 200
+        except Exception as sentiment_error:
+            app.logger.error(f"Sentiment analysis error for audio {audio_id}: {str(sentiment_error)}")
+            return jsonify({"error": f"Sentiment analysis error: {str(sentiment_error)}"}), 500
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
