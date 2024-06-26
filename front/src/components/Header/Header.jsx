@@ -2,6 +2,7 @@ import React from 'react';
 import './Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeadset, faBullhorn, faUsers, faLock } from '@fortawesome/free-solid-svg-icons';
+import iconImage from '../../assets/images/Genna.png'
 
 const Header = () => {
   return (
@@ -18,7 +19,7 @@ const Header = () => {
         <FontAwesomeIcon icon={faUsers} className="icon" />
         <FontAwesomeIcon icon={faLock} className="icon" />
         <div className="user-icon">
-          <img src="../src/assets/images/Genna.png" alt="User" />
+          <img src={iconImage} alt="User" />
         </div>
       </div>
     </header>
