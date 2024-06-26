@@ -13,3 +13,4 @@ watchdog
 python-dotenv
 accelerate
 requests
+twilio
