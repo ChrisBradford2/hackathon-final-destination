@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
 from instance.config import Config
+from dotenv import load_dotenv
+import app.whisperModel as whisperModel
 
 db = SQLAlchemy()
 
@@ -22,9 +24,13 @@ def create_app():
         app.logger.addHandler(handler)
 
     with app.app_context():
+        whisperModel.init_whisper()
         from .models import Audio, FileUpload, Sentiments  # Importer les modèles
         from .routes import main  # Import du Blueprint
         app.register_blueprint(main)  # Enregistrer le Blueprint
         db.create_all()
+
+    load_dotenv()
+
 
     return app
