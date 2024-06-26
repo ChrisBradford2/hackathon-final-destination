@@ -11,21 +11,6 @@ main = Blueprint('main', __name__)
 def index():
     return "Hello World!"
 
-# @main.route('/transcribe', methods=['POST'])
-# def transcribe():
-#     audio_file = request.files['file']
-#     transcription = transcribe_audio(audio_file)
-#     return jsonify({"transcription": transcription})
-
-# @main.route('/analyze_sentiment', methods=['POST'])
-# def sentiment_analysis():
-#     text = request.json.get('text')
-#     sentiment = analyze_sentiment(text)
-
-#     response = json.dumps({"sentiment": sentiment}, ensure_ascii=False)
-    
-#     return app.response_class(response, content_type='application/json; charset=utf-8')
-
 @main.route('/upload_audio', methods=['POST'])
 def upload_audio():
     try:
@@ -47,20 +32,6 @@ def upload_audio():
         else:
             app.logger.error(f"File upload failed for {s3_file_name}")
             return "File upload failed", 500
-    except Exception as e:
-        app.logger.error(f"An error occurred: {str(e)}")
-        return f"An error occurred: {str(e)}", 500
-
-@main.route('/transcribe_url', methods=['POST'])
-def transcribe_url():
-    try:
-        data = request.get_json()
-        url = data.get('url')
-        if not url:
-            return "No URL provided", 400
-        
-        transcription = transcribe_audio_from_url(url)
-        return jsonify({"transcription": transcription})
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
         return f"An error occurred: {str(e)}", 500
@@ -112,28 +83,40 @@ def transcribe_audio_by_id(audio_id):
     try:
         audio = Audio.query.get(audio_id)
         if not audio:
-            return "Audio not found", 404
+            return jsonify({"error": "Audio not found"}), 404
         
-        transcription = transcribe_audio_from_url(audio.url)
-        refined_transcription = refine_transcription(transcription)
+        try:
+            transcription = transcribe_audio_from_url(audio.url)
+            refined_transcription_data = refine_transcription(transcription)
+            if "error" in refined_transcription_data:
+                refined_transcription = refined_transcription_data["error"]
+            else:
+                refined_transcription = refined_transcription_data["transcription"]
+        except Exception as transcribe_error:
+            refined_transcription = f"Error during transcription refinement. Status code: 404"
+            app.logger.error(f"Transcription error for audio {audio_id}: {str(transcribe_error)}")
+        
+        # Store the refined transcription as plain text
         audio.transcription = refined_transcription
         audio.isAnalysed = True
-        db.session.commit()  # Sauvegarder les changements dans la base de données
+        
+        db.session.commit()  # Save changes to the database
         app.logger.info(f"Transcription for audio {audio_id} completed")
 
-        return jsonify({"transcription": transcription}), 200
+        return jsonify({"transcription": refined_transcription}), 200
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
-        return f"An error occurred: {str(e)}", 500
-    
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
-@main.route('/analyze/<int:audio_id>', methods=['POST'])
+@main.route('/analyze/<int:audio_id>', methods=['GET'])
 def analyze_audio(audio_id):
     try:
         audio = Audio.query.get(audio_id)
         if not audio:
             return "Audio not found", 404
         
+        if audio.transcription == None:
+            return "Transcription not found", 404
         sentiment = analyze_sentiment(audio.transcription)
         if (sentiment['label'] == 'Négatif' or sentiment['label'] == 'Très négatif'):
             audio.isInNeed = True
