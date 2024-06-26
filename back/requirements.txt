@@ -9,3 +9,8 @@ openai-whisper
 boto3
 python-dotenv
 soundfile
+watchdog
+python-dotenv
+accelerate
+requests
+twilio
