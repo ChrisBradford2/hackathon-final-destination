@@ -1,9 +1,12 @@
 from .models.Audio import Audio
 from flask import Blueprint, request, jsonify, current_app as app
 from .transcription import transcribe_audio, transcribe_audio_from_url
-from .sentiment_analysis import analyze_sentiment
+from .sentiment_analysis import analyze_sentiment, refine_transcription
 from .upload_file import upload_file
 from . import db
+from flask import current_app as app, request, jsonify
+from .transcription import transcribe_audio
+from .sentiment_analysis import analyze_sentiment, process_audio
 
 main = Blueprint('main', __name__)
 
@@ -11,11 +14,17 @@ main = Blueprint('main', __name__)
 def index():
     return "Hello World!"
 
-@main.route('/transcribe', methods=['POST'])
+@app.route('/analyse', methods=['POST'])
 def transcribe():
     audio_file = request.files['file']
-    transcription = transcribe_audio(audio_file)
-    return jsonify({"transcription": transcription})
+    print(f"Received audio file: {audio_file.filename}")  
+    return process_audio(audio_file)
+
+@main.route('/refine_transcription', methods=['POST'])
+def refine_transcript():
+    data = request.json
+    transcription = data.get('transcription')
+    return refine_transcription(transcription)
 
 @main.route('/analyze_sentiment', methods=['POST'])
 def sentiment_analysis():
