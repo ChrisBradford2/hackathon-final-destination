@@ -10,7 +10,6 @@ const DropdownTab = () => {
 
   return (
     <div>
-      {/* Dropdown Action */}
       <button
         id="dropdownActionButton"
         onClick={toggleActionDropdown}
@@ -39,7 +38,7 @@ const DropdownTab = () => {
       {showActionDropdown && (
         <div
           id="dropdownAction"
-          className="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44"
+          className="absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44"
         >
           <ul className="py-1 text-sm text-gray-700 " aria-labelledby="dropdownActionButton">
             <li>
@@ -50,11 +49,6 @@ const DropdownTab = () => {
             <li>
               <a href="#" className="block px-4 py-2 hover:bg-gray-100">
                 Modifier
-              </a>
-            </li>
-            <li>
-              <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-                
               </a>
             </li>
           </ul>
@@ -69,8 +63,6 @@ const DropdownTab = () => {
         </div>
       )}
 
-      {/* Dropdown Radio */}
-      
       <DropdownRadioTab/>
     </div>
   );

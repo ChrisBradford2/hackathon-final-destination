@@ -1,11 +1,13 @@
 import React, {  useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import Home from './pages/Home/Home';
 import './App.css';
 import Sidebar from './components/Sidebar/Sidebar';
 import Transcription from './pages/Transcriptions/Transcription';
+import Dashboard from './pages/DashboardActivité/Dashboard';
+import Error404 from './pages/Errors/Error404';
 
 const App = () => {
   const [sidebarWidth, setSidebarWidth] = useState(112);
@@ -45,6 +47,9 @@ const App = () => {
         <Routes>
           <Route path="/hackathon-final-destination/" element={<Home/>} />
           <Route path="/hackathon-final-destination/transcription" element={<Transcription/>} />
+          <Route path="/hackathon-final-destination/mon-activite" element={<Dashboard/>} />
+          <Route path="*" element={<Error404 />} />
+          
         </Routes>
         <Footer />
       </div>

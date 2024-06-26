@@ -11,14 +11,12 @@ const Transcription = () => {
   };
 
   const handleUpload = () => {
-    // Logique pour télécharger le fichier audio
-    console.log('Uploading file:', audioFile);
-    // Exemple: Envoi de la transcription simulée
+    //console.log('Uploading file:', audioFile);
     setTranscription('Ceci est une transcription simulée pour le fichier audio téléchargé.');
   };
 
   return (
-    <div className="transcription-container">
+    <div className="transcription-container m-36">
       <h1>Transcription Audio</h1>
       
       <div className="upload-section flex items-center w-full max-w-md mb-3 seva-fields formkit-fields">
@@ -45,7 +43,7 @@ const Transcription = () => {
       {mediaBlobUrl && (
         <audio controls className="w-full">
           <source src={mediaBlobUrl} type="audio/mpeg" />
-          Your browser does not support the audio element.
+          Votre navigateur ne supporte pas les éléments audio.
         </audio>
       )}
     </div>

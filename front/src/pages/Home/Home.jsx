@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import './Home.css';
+import { Link} from 'react-router-dom';
 import DropdownTab from '../../components/Dropdown/DropdownTab';
 import ModalAudio from '../../components/Modal/ModalAudio';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileAudio } from '@fortawesome/free-solid-svg-icons';
+import { faFileAudio, faCircle } from '@fortawesome/free-solid-svg-icons';
 
 const Home = () => {
-  // Example data for table rows
   const [tableData] = useState([
     {
+      id:1,
       etape: "J+1",
       protocole: "Test Classique",
       tel: "01 23 45 67 89",
@@ -25,6 +26,7 @@ const Home = () => {
       dureeIntervention: 120,
     },
     {
+      id:2,
       etape: "",
       protocole: "Test Classique",
       tel: "06 23 45 67 89",
@@ -41,6 +43,7 @@ const Home = () => {
       dureeIntervention: 120,
     },
     {
+      id:3,
       etape: "",
       protocole: "Test Classique",
       tel: "07 23 45 67 89",
@@ -58,6 +61,7 @@ const Home = () => {
     },
 
     {
+      id:4,
       etape: "J+1",
       protocole: "Test Classique",
       tel: "01 23 45 67 89",
@@ -74,6 +78,7 @@ const Home = () => {
       dureeIntervention: 120,
     },
     {
+      id:5,
       etape: "",
       protocole: "Test Classique",
       tel: "06 23 45 67 89",
@@ -90,6 +95,7 @@ const Home = () => {
       dureeIntervention: 120,
     },
     {
+      id:6,
       etape: "",
       protocole: "Test Classique",
       tel: "07 23 45 67 89",
@@ -107,11 +113,9 @@ const Home = () => {
     },
   ]);
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Number of items per page
+  const itemsPerPage = 10;
 
-  // Calculate pagination values
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = tableData.slice(indexOfFirstItem, indexOfLastItem);
@@ -120,21 +124,32 @@ const Home = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
   const [selectAll, setSelectAll] = useState(false);
+  const colors = [
+    'text-yellow-500',
+    'text-blue-500',
+    'text-orange-500'
+  ];
+
+  const getRandomColor = () => {
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
+  };
 
   const handleSelectAll = () => {
     setSelectAll(!selectAll);
     if (!selectAll) {
-      setSelectedRows(currentItems.map((item) => item.numeroOperation));
+      setSelectedRows(currentItems.map((item) => item.id));
     } else {
       setSelectedRows([]);
     }
   };
 
-  const handleSelectRow = (numeroOperation) => {
-    if (selectedRows.includes(numeroOperation)) {
-      setSelectedRows(selectedRows.filter((id) => id !== numeroOperation));
+  const handleSelectRow = (idItem) => {
+    console.log(selectedRows, idItem);
+    if (selectedRows.includes(idItem)) {
+      setSelectedRows(selectedRows.filter((id) => id !== idItem));
     } else {
-      setSelectedRows([...selectedRows, numeroOperation]);
+      setSelectedRows([...selectedRows, idItem]);
     }
   };
 
@@ -143,7 +158,6 @@ const Home = () => {
     setShowModal(true);
   };
 
-  // Function to handle page change
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -160,7 +174,7 @@ const Home = () => {
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
               </svg>
             </div>
-            <input type="text" id="table-search-users" className="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Rechercher"/>
+            <input type="text" id="table-search" className="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Rechercher"/>
           </div>
         </div>
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
@@ -178,6 +192,7 @@ const Home = () => {
                   <label htmlFor="checkbox-all-search" className="sr-only">checkbox</label>
                 </div>
               </th>
+              <th scope="col" className="p-3"></th>
               <th scope="col" className="p-3">Action</th>
               <th scope="col" className="p-3">Etape</th>
               <th scope="col" className="p-3">Protocole</th>
@@ -204,12 +219,15 @@ const Home = () => {
                     <input
                       id={`checkbox-${index}`}
                       type="checkbox"
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500    focus:ring-2  "
-                      checked={selectedRows.includes(item.numeroOperation)}
-                      onChange={() => handleSelectRow(item.numeroOperation)}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2  "
+                      checked={selectedRows.includes(item.id)}
+                      onChange={() => handleSelectRow(item.id)}
                     />
                     <label htmlFor={`checkbox-${index}`} className="sr-only">checkbox</label>
                   </div>
+                </td>
+                <td className="p-3">
+                  <FontAwesomeIcon icon={faCircle} className={getRandomColor()} />
                 </td>
                 <td className="p-3">
                   <button onClick={() => openModal(<div>Modal Content for {item.nom}</div>)}>
@@ -272,6 +290,14 @@ const Home = () => {
             </li>
           </ul>
         </nav>
+      </div>
+      <div className="mt-4">
+        <Link to={{
+          pathname: "/hackathon-final-destination/mon-activite",
+          state: { data: tableData }
+        }} className="text-blue-500 hover:underline">
+          View Alert Chart
+        </Link>
       </div>
       <ModalAudio showModal={showModal} setShowModal={setShowModal} content={modalContent} />
     </div>

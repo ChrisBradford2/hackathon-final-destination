@@ -4,9 +4,8 @@ const DropdownRadioTab = () => {
   const [showRadioDropdown, setShowRadioDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Fermer le dropdown si l'utilisateur clique en dehors de celui-ci
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    /*const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowRadioDropdown(false);
       }
@@ -15,7 +14,7 @@ const DropdownRadioTab = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-    };
+    };*/
   }, []);
 
   const toggleRadioDropdown = () => {
@@ -55,14 +54,14 @@ const DropdownRadioTab = () => {
             <li>
               <div className="flex items-center p-2 rounded hover:bg-gray-100">
                 <input
-                  id="filter-radio-example-1"
+                  id="filter-radio-j-5"
                   type="radio"
                   value="J-5"
                   name="filter-radio"
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                 />
                 <label
-                  htmlFor="filter-radio-example-1"
+                  htmlFor="filter-radio-j-5"
                   className="ml-2 text-sm font-medium text-gray-900"
                 >
                   J-5
@@ -72,14 +71,14 @@ const DropdownRadioTab = () => {
             <li>
               <div className="flex items-center p-2 rounded hover:bg-gray-100">
                 <input
-                  id="filter-radio-example-2"
+                  id="filter-radio-j-2"
                   type="radio"
                   value="J-2"
                   name="filter-radio"
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                 />
                 <label
-                  htmlFor="filter-radio-example-2"
+                  htmlFor="filter-radio-j-2"
                   className="ml-2 text-sm font-medium text-gray-900"
                 >
                   J-2
@@ -89,14 +88,14 @@ const DropdownRadioTab = () => {
             <li>
               <div className="flex items-center p-2 rounded hover:bg-gray-100">
                 <input
-                  id="filter-radio-example-2"
+                  id="filter-radio-j-1"
                   type="radio"
-                  value="J-2"
+                  value="J-1"
                   name="filter-radio"
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                 />
                 <label
-                  htmlFor="filter-radio-example-2"
+                  htmlFor="filter-radio-j-1"
                   className="ml-2 text-sm font-medium text-gray-900"
                 >
                   J-1
@@ -106,14 +105,14 @@ const DropdownRadioTab = () => {
             <li>
               <div className="flex items-center p-2 rounded hover:bg-gray-100">
                 <input
-                  id="filter-radio-example-2"
+                  id="filter-radio-j0"
                   type="radio"
-                  value="J-2"
+                  value="J0"
                   name="filter-radio"
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                 />
                 <label
-                  htmlFor="filter-radio-example-2"
+                  htmlFor="filter-radio-j0"
                   className="ml-2 text-sm font-medium text-gray-900"
                 >
                   J0
@@ -123,14 +122,14 @@ const DropdownRadioTab = () => {
             <li>
               <div className="flex items-center p-2 rounded hover:bg-gray-100">
                 <input
-                  id="filter-radio-example-2"
+                  id="filter-radio-j+1"
                   type="radio"
-                  value="J-2"
+                  value="J+1"
                   name="filter-radio"
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                 />
                 <label
-                  htmlFor="filter-radio-example-2"
+                  htmlFor="filter-radio-j+1"
                   className="ml-2 text-sm font-medium text-gray-900"
                 >
                   J+1
@@ -140,14 +139,14 @@ const DropdownRadioTab = () => {
             <li>
               <div className="flex items-center p-2 rounded hover:bg-gray-100">
                 <input
-                  id="filter-radio-example-2"
+                  id="filter-radio-j+4"
                   type="radio"
-                  value="J-2"
+                  value="J+4"
                   name="filter-radio"
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                 />
                 <label
-                  htmlFor="filter-radio-example-2"
+                  htmlFor="filter-radio-j+4"
                   className="ml-2 text-sm font-medium text-gray-900"
                 >
                   J+4
@@ -157,14 +156,14 @@ const DropdownRadioTab = () => {
             <li>
               <div className="flex items-center p-2 rounded hover:bg-gray-100">
                 <input
-                  id="filter-radio-example-2"
+                  id="filter-radio-j+7"
                   type="radio"
-                  value="J-2"
+                  value="J+7"
                   name="filter-radio"
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                 />
                 <label
-                  htmlFor="filter-radio-example-2"
+                  htmlFor="filter-radio-j+7"
                   className="ml-2 text-sm font-medium text-gray-900"
                 >
                   J+7
@@ -174,21 +173,20 @@ const DropdownRadioTab = () => {
             <li>
               <div className="flex items-center p-2 rounded hover:bg-gray-100">
                 <input
-                  id="filter-radio-example-2"
+                  id="filter-radio-j+2000"
                   type="radio"
-                  value="J-2"
+                  value="J+2000"
                   name="filter-radio"
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                 />
                 <label
-                  htmlFor="filter-radio-example-2"
+                  htmlFor="filter-radio-j+2000"
                   className="ml-2 text-sm font-medium text-gray-900"
                 >
                   J+2000
                 </label>
               </div>
             </li>
-            {/* Autres options de votre dropdown */}
           </ul>
         </div>
       )}

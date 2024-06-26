@@ -5,11 +5,11 @@ import { faCalendarAlt, faStickyNote, faTasks, faComments, faEnvelope, faClipboa
 
 const Sidebar = ({ setSidebarWidth }) => {
   const handleMouseEnter = () => {
-    setSidebarWidth(256); // largeur de la sidebar sur hover
+    setSidebarWidth(256);
   };
 
   const handleMouseLeave = () => {
-    setSidebarWidth(112); // largeur par défaut de la sidebar
+    setSidebarWidth(112);
   };
   return (
     <nav className="sidebar" onMouseEnter={handleMouseEnter}
@@ -24,16 +24,12 @@ const Sidebar = ({ setSidebarWidth }) => {
           <span className="sidebar-text">Notes</span>
         </li>
         <li>
-          <FontAwesomeIcon icon={faTasks} className="icon" />
-          <span className="sidebar-text">Doctolib Team</span>
-        </li>
-        <li>
           <FontAwesomeIcon icon={faComments} className="icon" />
           <span className="sidebar-text">Tâches (2)</span>
         </li>
         <li>
           <FontAwesomeIcon icon={faEnvelope} className="icon" />
-          <span className="sidebar-text">Messagerie patients</span>
+          <span className="sidebar-text">Audio patients</span>
         </li>
         <li>
           <FontAwesomeIcon icon={faClipboardList} className="icon" />
