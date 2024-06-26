@@ -1,3 +1,4 @@
+from .send_sms import send_sms
 from .models.Audio import Audio
 from .models.Label import Label
 from .models.Sentiments import Sentiments
@@ -30,6 +31,7 @@ def upload_audio():
 
         if upload_file(file, bucket_name, s3_file_name):
             app.logger.info(f"File {s3_file_name} successfully uploaded to {bucket_name}")
+            send_sms(f"New audio file uploaded: {s3_file_name}")
             return "File successfully uploaded", 200
         else:
             app.logger.error(f"File upload failed for {s3_file_name}")
@@ -135,11 +137,12 @@ def process_audio(audio_id):
 
             if sentiment.label in [Label.NEGATIF, Label.TRES_NEGATIF]:
                 audio.isInNeed = True
+                send_sms(f"Alert: Negative sentiment detected for audio {audio_id}. Sentiment: {sentiment.label.name}")
             else:
                 audio.isInNeed = False
 
             audio.isAnalysed = True
-            db.session.commit()  # Save changes to the database
+            db.session.commit()
             
             app.logger.info(f"Processing for audio {audio_id} completed")
 
