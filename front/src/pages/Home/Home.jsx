@@ -1,111 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Home.css';
 import DropdownTab from '../../components/Dropdown/DropdownTab';
 import ModalAudio from '../../components/Modal/ModalAudio';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileAudio } from '@fortawesome/free-solid-svg-icons';
+import { faFileAudio, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
-  // Example data for table rows
-  const [tableData] = useState([
-    {
-      etape: "J+1",
-      protocole: "Test Classique",
-      tel: "01 23 45 67 89",
-      sms: "Oui",
-      dateReference: "01/06/2000",
-      etat: "Actif",
-      numeroOperation: "123456",
-      nom: "Doe",
-      prenom: "John",
-      ipp: "987654321",
-      dateNaissance: "1990-01-01",
-      medecin: "Dr. Smith",
-      intervention: "Chirurgie",
-      dureeIntervention: 120,
-    },
-    {
-      etape: "",
-      protocole: "Test Classique",
-      tel: "06 23 45 67 89",
-      sms: "Oui",
-      dateReference: "01/06/1980",
-      etat: "Actif",
-      numeroOperation: "123456",
-      nom: "Thom",
-      prenom: "Thom",
-      ipp: "987654321",
-      dateNaissance: "1990-01-01",
-      medecin: "Dr. Smith",
-      intervention: "Chirurgie",
-      dureeIntervention: 120,
-    },
-    {
-      etape: "",
-      protocole: "Test Classique",
-      tel: "07 23 45 67 89",
-      sms: "Oui",
-      dateReference: "01/06/1980",
-      etat: "Actif",
-      numeroOperation: "123456",
-      nom: "Jean",
-      prenom: "Dupont",
-      ipp: "987654321",
-      dateNaissance: "1990-01-01",
-      medecin: "Dr. Smith",
-      intervention: "Chirurgie",
-      dureeIntervention: 120,
-    },
 
-    {
-      etape: "J+1",
-      protocole: "Test Classique",
-      tel: "01 23 45 67 89",
-      sms: "Oui",
-      dateReference: "01/06/2000",
-      etat: "Actif",
-      numeroOperation: "123456",
-      nom: "Doe",
-      prenom: "John",
-      ipp: "987654321",
-      dateNaissance: "1990-01-01",
-      medecin: "Dr. Smith",
-      intervention: "Chirurgie",
-      dureeIntervention: 120,
-    },
-    {
-      etape: "",
-      protocole: "Test Classique",
-      tel: "06 23 45 67 89",
-      sms: "Oui",
-      dateReference: "01/06/1980",
-      etat: "Actif",
-      numeroOperation: "123456",
-      nom: "Thom",
-      prenom: "Thom",
-      ipp: "987654321",
-      dateNaissance: "1990-01-01",
-      medecin: "Dr. Smith",
-      intervention: "Chirurgie",
-      dureeIntervention: 120,
-    },
-    {
-      etape: "",
-      protocole: "Test Classique",
-      tel: "07 23 45 67 89",
-      sms: "Oui",
-      dateReference: "01/06/1980",
-      etat: "Actif",
-      numeroOperation: "123456",
-      nom: "Jean",
-      prenom: "Dupont",
-      ipp: "987654321",
-      dateNaissance: "1990-01-01",
-      medecin: "Dr. Smith",
-      intervention: "Chirurgie",
-      dureeIntervention: 120,
-    },
-  ]);
+  const [audios, setAudios] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Get audios from API
+  const fetchAudios = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:5001/audios');
+      const data = await response.json();
+      console.log(data);
+      setAudios(data);
+      setLoading(false);
+    } catch (error) {
+      setError(error);
+      setLoading(false);
+      console.error(error);
+    }
+  };
+
+  // Fetch audios on component mount
+  useEffect(() => {
+    fetchAudios();
+  }, []);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -114,8 +40,8 @@ const Home = () => {
   // Calculate pagination values
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = tableData.slice(indexOfFirstItem, indexOfLastItem);
-  const totalItems = tableData.length;
+  const currentItems = audios.slice(indexOfFirstItem, indexOfLastItem);
+  const totalItems = audios.length;
   const [selectedRows, setSelectedRows] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
@@ -151,6 +77,10 @@ const Home = () => {
   return (
     <div className="home mt-20">
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg mr-8 mt-20">
+        <Link to="/hackathon-final-destination/transcription" className="my-4 px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-800">
+          <FontAwesomeIcon icon={faPlus} className="text-white" />
+          <span className="ms-2">Ajouter une transcription</span>
+        </Link>
         <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-4 bg-blue-950 px-4 w-full">
           <DropdownTab />
           <label htmlFor="table-search" className="sr-only">Search</label>
@@ -179,21 +109,10 @@ const Home = () => {
                 </div>
               </th>
               <th scope="col" className="p-3">Action</th>
-              <th scope="col" className="p-3">Etape</th>
-              <th scope="col" className="p-3">Protocole</th>
-              <th scope="col" className="p-3">Tél. portable</th>
-              <th scope="col" className="p-3">Suivi SMS</th>
+              <th scope="col" className="p-3">Audio</th>
               <th scope="col" className="p-3">Date de référence</th>
               <th scope="col" className="p-3">Etat</th>
-              <th scope="col" className="p-3">Numéro d'opération</th>
-              <th scope="col" className="p-3">Nom</th>
-              <th scope="col" className="p-3">Prénom</th>
-              <th scope="col" className="p-3">IPP</th>
-              <th scope="col" className="p-3">Date de naissance</th>
-              <th scope="col" className="p-3">Médecin</th>
-              <th scope="col" className="p-3">Intervention/Examen</th>
-              <th scope="col" className="p-3">Durée intervention (en mins)</th>
-              <th scope="col" className="p-3">...</th>
+              <th scope="col" className="p-3">Besoin d'intervention</th>
             </tr>
           </thead>
           <tbody>
@@ -205,32 +124,33 @@ const Home = () => {
                       id={`checkbox-${index}`}
                       type="checkbox"
                       className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500    focus:ring-2  "
-                      checked={selectedRows.includes(item.numeroOperation)}
-                      onChange={() => handleSelectRow(item.numeroOperation)}
+                      checked={selectedRows.includes(item.id)}
+                      onChange={() => handleSelectRow(item.id)}
                     />
                     <label htmlFor={`checkbox-${index}`} className="sr-only">checkbox</label>
                   </div>
                 </td>
                 <td className="p-3">
-                  <button onClick={() => openModal(<div>Modal Content for {item.nom}</div>)}>
+                  <Link to={`/transcription/${item.id}`} className="text-blue-600 hover:text-blue-800 cursor-pointer">
                     <FontAwesomeIcon icon={faFileAudio} className="text-blue-600 hover:text-blue-800 cursor-pointer" />
-                  </button>
+                  </Link>
                 </td>
-                <td className="p-3">{item.etape}</td>
-                <td className="p-3">{item.protocole}</td>
-                <td className="p-3">{item.tel}</td>
-                <td className="p-3">{item.sms}</td>
-                <td className="p-3">{item.dateReference}</td>
-                <td className="p-3">{item.etat}</td>
-                <td className="p-3">{item.numeroOperation}</td>
-                <td className="p-3">{item.nom}</td>
-                <td className="p-3">{item.prenom}</td>
-                <td className="p-3">{item.ipp}</td>
-                <td className="p-3">{item.dateNaissance}</td>
-                <td className="p-3">{item.medecin}</td>
-                <td className="p-3">{item.intervention}</td>
-                <td className="p-3">{item.dureeIntervention}</td>
-                <td className="p-3">...</td>
+                <td className="p-3">{item.audio}</td>
+                <td className="p-3">{item.createdAt}</td>
+                <td className="p-3">
+                  {item.isAnalysed ? (
+                    <span className="text-green-500">Analysé</span>
+                  ) : (
+                    <span className="text-red-500">Non analysé</span>
+                  )}
+                  </td>
+                <td className="p-3">
+                  {item.isInNeed ? (
+                    <span className="text-green-500">Oui</span>
+                  ) : (
+                    <span className="text-red-500">Non</span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

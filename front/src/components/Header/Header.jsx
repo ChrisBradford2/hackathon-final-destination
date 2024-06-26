@@ -2,11 +2,14 @@ import React from 'react';
 import './Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeadset, faBullhorn, faUsers, faLock } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
     <header className="header">
-      <div className="logo">CalMedica</div>
+      <Link to="/hackathon-final-destination/" className="logo">
+        CalMedia
+      </Link>
       <div className="search-bar">
         <input type="text" placeholder="Rechercher un patient" />
       </div>
