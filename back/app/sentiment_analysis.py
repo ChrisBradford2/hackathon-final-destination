@@ -1,11 +1,11 @@
 from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
-from flask import current_app as app, jsonify
+from flask import current_app as app
 from .transcription import transcribe_audio
 import os
 import requests
 import json as json_py
 
-sentiment_pipeline = pipeline("sentiment-analysis", model="nlptown/bert-base-multilingual-uncased-sentiment")
+sentiment_pipeline = pipeline("sentiment-analysis", model="nlptown/bert-base-multilingual-uncased-sentiment", tokenizer="nlptown/bert-base-multilingual-uncased-sentiment", max_length=512, truncation=True)
 
 def process_audio(audio_file):
     transcription = transcribe_audio(audio_file)
@@ -33,26 +33,22 @@ def analyze_sentiment(text):
 def refine_transcription(transcription):
     system_prompt = """Vous êtes un assistant avancé de raffinement de texte spécialisé dans l'analyse des transcriptions audio pour en vérifier la cohérence et l'exactitude.
     Votre tâche consiste à examiner la transcription pour y détecter d'éventuelles erreurs, telles que des mots mal transcrits mais qui sonnent similaires aux mots corrects.
-    Corrigez ces erreurs en remplaçant les mots incohérents par les mots appropriés qui correspondent au contexte de la transcription.
-    Votre objectif est de produire la transcription la plus précise et contextuellement appropriée possible.
-    Le retour doit être au format JSON 
-    { 
-        "refine-transcription": "<refined_transcription>"
-    }."""
+    Faites un résumé de la transcription et donnez votre avis sur les sentiments exprimés par le patient.
+    Votre objectif est de produire l'analyse de sentiment la plus précise et contextuellement appropriée possible.
+    Le retour doit être au format texte brut et impérativement en langue française."""
 
     messages = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": "Voici la transcription du retour du patient : " + transcription}
     ]
 
-    # Make a request to the Llama API
     url = "http://host.docker.internal:11434/api/chat"
 
     headers = {
         "Content-Type": "application/json"
     }
     data = {
-        "model": "phi3:3.8b",
+        "model": "phi3:latest",
         "messages": messages,
         "stream": False
     }
@@ -60,18 +56,17 @@ def refine_transcription(transcription):
     response = requests.post(url, headers=headers, data=json_py.dumps(data))
 
     if response.status_code == 200:
-        response_data = response.json()
-        app.logger.info(f"Received response from Llama API: {response_data}")
-        generated_text = response_data["message"]["content"]
+        response_text = response.text.strip()
+        app.logger.info(f"Received response from Llama API: {response_text}")
 
+        # Extract the transcription content from the JSON response
         try:
-            # Parse the generated text as JSON
-            parsed_response = json_py.loads(generated_text)
-            # Extract the refined transcription from the parsed response
-            refined_transcription = parsed_response["refine-transcription"]
-            return {"refine-transcription": refined_transcription}
-        except (json_py.JSONDecodeError, KeyError):
-            app.logger.warning("Failed to parse response as JSON or extract refined transcription")
+            response_data = json_py.loads(response_text)
+            generated_text = response_data["message"]["content"]
+            app.logger.info(f"Extracted refined transcription: {generated_text}")
+            return {"transcription": generated_text}
+        except (json_py.JSONDecodeError, KeyError) as e:
+            app.logger.warning(f"Failed to parse response as JSON or extract refined transcription: {str(e)}")
             return {"error": "Failed to parse response"}
     else:
         app.logger.error(f"Error during transcription refinement. Status code: {response.status_code}")
