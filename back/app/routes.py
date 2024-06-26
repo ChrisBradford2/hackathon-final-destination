@@ -1,12 +1,9 @@
 from .models.Audio import Audio
 from flask import Blueprint, request, jsonify, current_app as app
 from .transcription import transcribe_audio, transcribe_audio_from_url
-from .sentiment_analysis import analyze_sentiment, refine_transcription
+from .sentiment_analysis import analyze_sentiment, refine_transcription, process_audio
 from .upload_file import upload_file
 from . import db
-from flask import current_app as app, request, jsonify
-from .transcription import transcribe_audio
-from .sentiment_analysis import analyze_sentiment, process_audio
 
 main = Blueprint('main', __name__)
 
