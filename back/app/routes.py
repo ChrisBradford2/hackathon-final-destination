@@ -4,7 +4,7 @@ from .models.Label import Label
 from .models.Sentiments import Sentiments
 from flask import Blueprint, request, jsonify, current_app
 from .transcription import transcribe_audio, transcribe_audio_from_url
-from .sentiment_analysis import analyze_sentiment, refine_transcription
+from .sentiment_analysis import analyze_sentiment, refine_transcription, fixError_transcription
 from .upload_file import upload_file
 from . import db
 
@@ -31,7 +31,6 @@ def upload_audio():
 
         if upload_file(file, bucket_name, s3_file_name):
             current_app.logger.info(f"File {s3_file_name} successfully uploaded to {bucket_name}")
-            send_sms(f"New audio file uploaded: {s3_file_name}")
             return "File successfully uploaded", 200
         else:
             current_app.logger.error(f"File upload failed for {s3_file_name}")
@@ -59,6 +58,7 @@ def get_audios():
                 'audio': audio.audio,
                 'isAnalysed': audio.isAnalysed,
                 'transcription': audio.transcription,
+                'raw_transcription': audio.raw_transcription,
                 'sentiment': sentiment_data,
                 'isInNeed': audio.isInNeed,
                 'url': audio.url
@@ -89,6 +89,7 @@ def get_audio(audio_id):
             'audio': audio.audio,
             'isAnalysed': audio.isAnalysed,
             'transcription': audio.transcription,
+            'raw_transcription': audio.raw_transcription,
             'sentiment': sentiment_data,
             'isInNeed': audio.isInNeed,
             'url': audio.url
@@ -123,38 +124,56 @@ def process_audio(audio_id):
         try:
             # Transcribe the audio
             transcription = transcribe_audio_from_url(audio.url)
-            refined_transcription_data = refine_transcription(transcription)
-            if "error" in refined_transcription_data:
-                refined_transcription = refined_transcription_data["error"]
+            current_app.logger.info(f"Raw transcription for audio {audio_id}: {transcription}")
+
+            raw_transcription = fixError_transcription(transcription)
+            current_app.logger.info(f"Fixed transcription for audio {audio_id}: {raw_transcription}")
+
+            refined_transcription_data = refine_transcription(raw_transcription)
+            current_app.logger.info(f"Refined transcription data for audio {audio_id}: {refined_transcription_data}")
+
+            # Check and handle the refined transcription data
+            if isinstance(refined_transcription_data, dict):
+                if "error" in refined_transcription_data:
+                    refined_transcription = refined_transcription_data["error"]
+                elif "transcription" in refined_transcription_data:
+                    refined_transcription = refined_transcription_data["transcription"]
+                else:
+                    refined_transcription = "Error during transcription refinement. Status code: 404"
             else:
-                refined_transcription = refined_transcription_data["transcription"]
+                refined_transcription = refined_transcription_data
+            
+            current_app.logger.info(f"Refined transcription for audio {audio_id}: {refined_transcription}")
+
         except Exception as transcribe_error:
-            refined_transcription = f"Error during transcription refinement. Status code: 404"
+            refined_transcription = "Error during transcription refinement. Status code: 404"
             current_app.logger.error(f"Transcription error for audio {audio_id}: {str(transcribe_error)}")
             return jsonify({"error": refined_transcription}), 500
 
         # Store the refined transcription
         audio.transcription = refined_transcription
+        audio.raw_transcription = raw_transcription
 
         try:
             # Analyze the sentiment
             sentiment_result = analyze_sentiment(audio.transcription)
             sentiment_label_str = sentiment_result['label']
-            
-            # Debugging info
-            current_app.logger.info(f"Sentiment label: {sentiment_label_str}")
+            sentiment_score = sentiment_result['score']
+
+            current_app.logger.info(f"Sentiment label: {sentiment_label_str}, Score: {sentiment_score}")
 
             try:
-                sentiment_label = Label(sentiment_label_str)
-            except ValueError:
+                # Normalize the sentiment label to match the enum values
+                sentiment_label = Label[sentiment_label_str.replace(" ", "_").upper()]
+            except KeyError:
                 current_app.logger.error(f"Sentiment label '{sentiment_label_str}' not found in Label enum")
                 return jsonify({"error": f"Invalid sentiment label: {sentiment_label_str}"}), 500
 
             # Create and save the sentiment record
             sentiment = Sentiments(
                 label=sentiment_label,
-                score=sentiment_result['score'],
-                audio_id=audio_id
+                score=sentiment_score,
+                audio_id=audio.id
             )
 
             db.session.add(sentiment)
@@ -172,13 +191,14 @@ def process_audio(audio_id):
 
             # Convert the sentiment result to a JSON-serializable format
             sentiment_data = {
-                "label": sentiment.label.name,
+                "label": sentiment.label.value,
                 "score": sentiment.score
             }
 
             return jsonify({
                 "message": "Processing completed",
                 "transcription": refined_transcription,
+                "raw_transcription": raw_transcription,
                 "sentiment": sentiment_data
             }), 200
         except Exception as sentiment_error:

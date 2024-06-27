@@ -6,7 +6,6 @@ const Upload = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [formDataDebug, setFormDataDebug] = useState('');
 
   const handleFileChange = (event) => {
     setAudioFile(event.target.files[0]);
@@ -15,11 +14,17 @@ const Upload = () => {
   useEffect(() => {
     if (audioFile) {
       const formData = new FormData();
-      formData.append('file', audioFile); // Change 'audio' to 'file'
-      const entries = Array.from(formData.entries()).map(([key, value]) => `${key}: ${value.name || value}`);
-      setFormDataDebug(entries.join(', '));
+      formData.append('file', audioFile);
     }
   }, [audioFile]);
+
+  const handleStop = async (blobUrl) => {
+    const audioBlob = await fetch(blobUrl).then((r) => r.blob());
+    const uniqueSuffix = Date.now();
+    const audioFile = new File([audioBlob], `recording_${uniqueSuffix}.wav`, { type: 'audio/wav' });
+
+    setAudioFile(audioFile);
+  };
 
   const handleUpload = async () => {
     setLoading(true);
@@ -33,16 +38,7 @@ const Upload = () => {
     }
 
     const formData = new FormData();
-    formData.append('file', audioFile); // Change 'audio' to 'file'
-
-    console.log('FormData contents before upload:', formDataDebug);
-    console.log('Uploading file...');
-    console.log('File:', audioFile);
-
-    // Check FormData contents
-    formData.forEach((value, key) => {
-      console.log(key, value);
-    });
+    formData.append('file', audioFile);
 
     try {
       const response = await fetch('http://localhost:5001/upload_audio', {
@@ -111,16 +107,11 @@ const Upload = () => {
       {error && <div className="text-red-500">{error}</div>}
       {success && <div className="text-green-500">{success}</div>}
 
-      {formDataDebug && (
-        <div className="text-gray-500 mt-2">
-          <strong>FormData Debug:</strong> {formDataDebug}
-        </div>
-      )}
-
       <div className="record-section mt-6">
         <h2>Enregistrer un Audio :</h2>
         <ReactMediaRecorder
           audio
+          onStop={mediaBlobUrl=>handleStop(mediaBlobUrl)}
           render={({ startRecording, stopRecording, mediaBlobUrl }) => (
             <div>
               <button 

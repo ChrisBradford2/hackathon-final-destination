@@ -77,7 +77,7 @@ const Home = () => {
   return (
     <div className="home mt-20">
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg mr-8 mt-20">
-        <Link to="/hackathon-final-destination/transcription" className="my-4 px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-800">
+        <Link to="/hackathon-final-destination/upload" className="my-4 px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-800">
           <FontAwesomeIcon icon={faPlus} className="text-white" />
           <span className="ms-2">Ajouter une transcription</span>
         </Link>
