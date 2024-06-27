@@ -1,5 +1,6 @@
 import os
 from twilio.rest import Client
+from flask import current_app
 
 TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
@@ -15,6 +16,6 @@ def send_sms(message):
             from_=TWILIO_PHONE_NUMBER,
             to=TO_PHONE_NUMBER
         )
-        app.logger.info("SMS sent successfully")
+        current_app.logger.info("SMS sent successfully")
     except Exception as e:
-        app.logger.error(f"Failed to send SMS: {str(e)}")
+        current_app.logger.error(f"Failed to send SMS: {str(e)}")
