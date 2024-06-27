@@ -4,7 +4,7 @@ from .models.Label import Label
 from .models.Sentiments import Sentiments
 from flask import Blueprint, request, jsonify, current_app as app, json
 from .transcription import transcribe_audio, transcribe_audio_from_url
-from .sentiment_analysis import analyze_sentiment, refine_transcription
+from .sentiment_analysis import analyze_sentiment, refine_transcription, fixError_transcription
 from .upload_file import upload_file
 from . import db
 
@@ -59,6 +59,7 @@ def get_audios():
                 'audio': audio.audio,
                 'isAnalysed': audio.isAnalysed,
                 'transcription': audio.transcription,
+                'raw_transcription': audio.raw_transcription,
                 'sentiment': sentiment_data,
                 'isInNeed': audio.isInNeed,
                 'url': audio.url
@@ -89,6 +90,7 @@ def get_audio(audio_id):
             'audio': audio.audio,
             'isAnalysed': audio.isAnalysed,
             'transcription': audio.transcription,
+            'raw_transcription': audio.raw_transcription,
             'sentiment': sentiment_data,
             'isInNeed': audio.isInNeed,
             'url': audio.url
@@ -108,7 +110,8 @@ def process_audio(audio_id):
         try:
             # Transcribe the audio
             transcription = transcribe_audio_from_url(audio.url)
-            refined_transcription_data = refine_transcription(transcription)
+            raw_transcription = fixError_transcription(transcription)
+            refined_transcription_data = refine_transcription(raw_transcription)
             if "error" in refined_transcription_data:
                 refined_transcription = refined_transcription_data["error"]
             else:
@@ -120,6 +123,7 @@ def process_audio(audio_id):
 
         # Store the refined transcription
         audio.transcription = refined_transcription
+        audio.raw_transcription = raw_transcription
 
         try:
             # Analyze the sentiment
@@ -155,6 +159,7 @@ def process_audio(audio_id):
             return jsonify({
                 "message": "Processing completed",
                 "transcription": refined_transcription,
+                "raw_transcription": raw_transcription,
                 "sentiment": sentiment_data
             }), 200
         except Exception as sentiment_error:

@@ -30,6 +30,47 @@ def analyze_sentiment(text):
     }
     return sentiment
 
+def fixError_transcription(transcription):
+    system_prompt = """Vous êtes un assistant avancé de raffinement de texte spécialisé dans l'analyse des transcriptions audio pour en vérifier la cohérence et l'exactitude.
+        Votre tâche consiste à examiner la transcription pour y détecter d'éventuelles erreurs, telles que des mots mal transcrits mais qui sonnent similaires aux mots corrects.
+        Fixez la transcription et retournes la version plsu pertinence.
+        Le retour doit être au format texte brut et impérativement en langue française."""
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": "Voici la transcription du retour du patient : " + transcription}
+    ]
+
+    url = "http://host.docker.internal:11434/api/chat"
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+    data = {
+        "model": "phi3:latest",
+        "messages": messages,
+        "stream": False
+    }
+
+    response = requests.post(url, headers=headers, data=json_py.dumps(data))
+
+    if response.status_code == 200:
+        response_text = response.text.strip()
+        app.logger.info(f"Received response from Llama API: {response_text}")
+
+        # Extract the transcription content from the JSON response
+        try:
+            response_data = json_py.loads(response_text)
+            generated_text = response_data["message"]["content"]
+            app.logger.info(f"Extracted refined transcription: {generated_text}")
+            return {"transcription": generated_text}
+        except (json_py.JSONDecodeError, KeyError) as e:
+            app.logger.warning(f"Failed to parse response as JSON or extract refined transcription: {str(e)}")
+            return {"error": "Failed to parse response"}
+    else:
+        app.logger.error(f"Error during transcription refinement. Status code: {response.status_code}")
+        return {"error": f"Error during transcription refinement. Status code: {response.status_code}"}
+
 def refine_transcription(transcription):
     system_prompt = """Vous êtes un assistant avancé de raffinement de texte spécialisé dans l'analyse des transcriptions audio pour en vérifier la cohérence et l'exactitude.
     Votre tâche consiste à examiner la transcription pour y détecter d'éventuelles erreurs, telles que des mots mal transcrits mais qui sonnent similaires aux mots corrects.
