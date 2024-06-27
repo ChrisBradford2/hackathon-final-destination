@@ -12,6 +12,14 @@ const Transcription = () => {
     setAudioFile(event.target.files[0]);
   };
 
+  const handleStop = async (blobUrl) => {
+    const audioBlob = await fetch(blobUrl).then((r) => r.blob());
+    const uniqueSuffix = Date.now();
+    const audioFile = new File([audioBlob], `recording_${uniqueSuffix}.wav`, { type: 'audio/wav' });
+
+    setAudioFile(audioFile);
+  };
+
   const handleUpload = () => {
     if (!audioFile) {
       alert('Veuillez sélectionner un fichier audio');
@@ -55,6 +63,7 @@ const Transcription = () => {
         <h2>Enregistrer un Audio :</h2>
         <ReactMediaRecorder
           audio
+          onStop={mediaBlobUrl=>handleStop(mediaBlobUrl)}
           render={({ startRecording, stopRecording, mediaBlobUrl }) => (
             <div>
               <button type='button' className='px-3 py-2 text-sm font-medium text-center text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100' onClick={startRecording}>Commencer l'enregistrement</button>
