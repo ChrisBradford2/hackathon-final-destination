@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      const eventSource = new EventSource(
+        "http://localhost:3000/subscribe/FERFERFGERGVRE"
+      );
+      eventSource.addEventListener("message", (event) => {
+        document.write(event.data + "<br>");
+      });
+      eventSource.addEventListener("progress", (event) => {
+        document.write("progress: " + event.data + "<br>");
+      });
+    </script>
+  </head>
+  <body></body>
+</html>
