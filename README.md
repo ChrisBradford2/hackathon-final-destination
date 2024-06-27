@@ -3,7 +3,20 @@
 ## Diagramme
 <img width="745" alt="image" src="https://github.com/ChrisBradford2/hackathon-final-destination/assets/59414269/c5bd6c53-0449-4638-af95-34c99f468cfa">
 
+## Comment lancer le projet:
 
+- Backend:
+    ```
+    cd back
+    ollama pull phi3:latest
+    docker compose up --build
+    ```
+- Frontend:
+    ```
+    cd front
+    npm i
+    npm run dev
+    ```
 
 ## Membre d'equipe:
 - Dev:
