@@ -63,13 +63,13 @@ def fixError_transcription(transcription):
             response_data = json_py.loads(response_text)
             generated_text = response_data["message"]["content"]
             app.logger.info(f"Extracted refined transcription: {generated_text}")
-            return {"transcription": generated_text}
+            return generated_text  # Always return a string
         except (json_py.JSONDecodeError, KeyError) as e:
             app.logger.warning(f"Failed to parse response as JSON or extract refined transcription: {str(e)}")
-            return {"error": "Failed to parse response"}
+            return "Failed to parse response"
     else:
         app.logger.error(f"Error during transcription refinement. Status code: {response.status_code}")
-        return {"error": f"Error during transcription refinement. Status code: {response.status_code}"}
+        return f"Error during transcription refinement. Status code: {response.status_code}"
 
 def refine_transcription(transcription):
     system_prompt = """Vous êtes un assistant avancé de raffinement de texte spécialisé dans l'analyse des transcriptions audio pour en vérifier la cohérence et l'exactitude.
@@ -105,13 +105,13 @@ def refine_transcription(transcription):
             response_data = json_py.loads(response_text)
             generated_text = response_data["message"]["content"]
             app.logger.info(f"Extracted refined transcription: {generated_text}")
-            return {"transcription": generated_text}
+            return generated_text  # Always return a string
         except (json_py.JSONDecodeError, KeyError) as e:
             app.logger.warning(f"Failed to parse response as JSON or extract refined transcription: {str(e)}")
-            return {"error": "Failed to parse response"}
+            return "Failed to parse response"
     else:
         app.logger.error(f"Error during transcription refinement. Status code: {response.status_code}")
-        return {"error": f"Error during transcription refinement. Status code: {response.status_code}"}
+        return f"Error during transcription refinement. Status code: {response.status_code}"
 
 def analyze_retour(text):
     model_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
