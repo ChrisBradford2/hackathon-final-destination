@@ -10,8 +10,6 @@ sentiment_pipeline = pipeline("sentiment-analysis", model="nlptown/bert-base-mul
 def process_audio(audio_file):
     transcription = transcribe_audio(audio_file)
     refine_trans = refine_transcription(transcription)
-    # analyze_sentiment(refine_trans)
-    # analyze_retour(refine_trans)
 
     return refine_trans
 
@@ -131,7 +129,6 @@ def analyze_retour(text):
     inputs = tokenizer.apply_chat_template(messages, return_tensors="pt").to("cuda")
 
     outputs = model.generate(inputs, max_new_tokens=20)
-    print(tokenizer.decode(outputs[0], skip_special_tokens=True))
 
     risk_pipeline = pipeline("text-classification", model="nlptown/bert-base-multilingual-uncased-sentiment")
     result = risk_pipeline(text)

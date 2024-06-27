@@ -47,13 +47,11 @@ const Upload = () => {
       });
 
       const responseText = await response.text();
-      console.log(responseText);
 
       // Check if the response is JSON
       try {
         const data = JSON.parse(responseText);
         setSuccess('Upload réussi');
-        console.log(data);
       } catch (e) {
         // If it's not JSON, treat it as a plain text response
         if (response.ok) {
@@ -73,30 +71,30 @@ const Upload = () => {
   return (
     <div className="transcription-container">
       <h1>Upload audio</h1>
-      
+
       <form action="">
         <div className="upload-section flex items-center w-full max-w-md mb-3 seva-fields formkit-fields">
-          <input 
-            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none" 
-            aria-describedby="file_input_help" 
-            id="file_input" 
-            type="file" 
-            accept="audio/*" 
+          <input
+            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
+            aria-describedby="file_input_help"
+            id="file_input"
+            type="file"
+            accept="audio/*"
             onChange={handleFileChange}
           />
         </div>
         {!loading ? (
-          <button 
-            type='button' 
-            className='px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300' 
+          <button
+            type='button'
+            className='px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300'
             onClick={handleUpload}
           >
             Envoyer
           </button>
         ) : (
-          <button 
-            type='button' 
-            className='px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 animation-pulse' 
+          <button
+            type='button'
+            className='px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 animation-pulse'
             disabled
           >
             Envoi en cours...
@@ -114,16 +112,16 @@ const Upload = () => {
           onStop={mediaBlobUrl=>handleStop(mediaBlobUrl)}
           render={({ startRecording, stopRecording, mediaBlobUrl }) => (
             <div>
-              <button 
-                type='button' 
-                className='px-3 py-2 text-sm font-medium text-center text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100' 
+              <button
+                type='button'
+                className='px-3 py-2 text-sm font-medium text-center text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100'
                 onClick={startRecording}
               >
                 Commencer l'enregistrement
               </button>
-              <button 
-                type='button' 
-                className='px-3 py-2 text-sm font-medium text-center text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100' 
+              <button
+                type='button'
+                className='px-3 py-2 text-sm font-medium text-center text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100'
                 onClick={stopRecording}
               >
                 Arrêter l'enregistrement

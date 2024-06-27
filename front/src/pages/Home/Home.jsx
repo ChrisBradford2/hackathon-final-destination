@@ -18,7 +18,6 @@ const Home = () => {
     try {
       const response = await fetch('http://localhost:5001/audios');
       const data = await response.json();
-      console.log(data);
       setAudios(data);
       setLoading(false);
     } catch (error) {

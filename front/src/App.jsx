@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header/Header';
-import Footer from './components/Footer/Footer';
 import Home from './pages/Home/Home';
 import './App.css';
 import Sidebar from './components/Sidebar/Sidebar';
@@ -41,7 +40,6 @@ const App = () => {
             <Route path="/hackathon-final-destination/:id" element={<Audio />} />
           </Routes>
         </div>
-        <Footer />
       </div>
       <ToastContainer
         position="top-right"
