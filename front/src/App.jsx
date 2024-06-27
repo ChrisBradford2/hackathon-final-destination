@@ -9,6 +9,7 @@ import Transcription from './pages/Transcriptions/Transcription';
 import Dashboard from './pages/DashboardActivité/Dashboard';
 import Error404 from './pages/Errors/Error404';
 import Upload from './pages/Upload/Upload';
+import DashboardActivities from './pages/DashboardActivité/DashboardActivities';
 
 const App = () => {
   const [sidebarWidth, setSidebarWidth] = useState(112);
@@ -50,8 +51,8 @@ const App = () => {
           <Route path="/hackathon-final-destination/upload" element={<Upload/>} />
           <Route path="/hackathon-final-destination/transcription" element={<Transcription/>} />
           <Route path="/hackathon-final-destination/mon-activite" element={<Dashboard/>} />
+          <Route path="/hackathon-final-destination/dashboard" element={<DashboardActivities/>} />
           <Route path="*" element={<Error404 />} />
-          
         </Routes>
         <Footer />
       </div>
