@@ -6,10 +6,10 @@ import Home from './pages/Home/Home';
 import './App.css';
 import Sidebar from './components/Sidebar/Sidebar';
 import Transcription from './pages/Transcriptions/Transcription';
-import Dashboard from './pages/DashboardActivité/Dashboard';
+import Dashboard from './pages/DashboardActivite/Dashboard';
 import Error404 from './pages/Errors/Error404';
 import Upload from './pages/Upload/Upload';
-import DashboardActivities from './pages/DashboardActivité/DashboardActivities';
+import DashboardActivities from './pages/DashboardActivite/DashboardActivities';
 
 const App = () => {
   const [sidebarWidth, setSidebarWidth] = useState(112);
