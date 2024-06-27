@@ -59,3 +59,7 @@
 .sidebar:hover ~ .main-content {
   margin-left: 12.50rem;
 }
+
+.z-20{
+  z-index: 20;
+}

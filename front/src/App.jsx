@@ -45,7 +45,8 @@ const App = () => {
     <Router>
       <div className="App">
         <Header />
-        <Sidebar setSidebarWidth={setSidebarWidth}/>
+        <Sidebar/> 
+        {/* setSidebarWidth={setSidebarWidth} */}
         <Routes>
           <Route path="/hackathon-final-destination/" element={<Home/>} />
           <Route path="/hackathon-final-destination/upload" element={<Upload/>} />

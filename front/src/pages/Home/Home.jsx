@@ -82,7 +82,7 @@ const Home = () => {
   };
 
   return (
-    <div className="home mt-20">
+    <div className="home mt-20 ml-20">
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg mr-8 mt-20">
         <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-4 bg-blue-950 px-4 w-full">
           <Link to="/hackathon-final-destination/transcription" className="my-4 px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-800">

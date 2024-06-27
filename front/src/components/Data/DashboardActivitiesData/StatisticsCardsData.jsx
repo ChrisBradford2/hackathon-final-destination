@@ -4,6 +4,8 @@ import {
     UsersIcon,
     ChartBarIcon,
   } from "@heroicons/react/24/solid";
+
+  // orange, bleu, gris, jaune
   
   export const statisticsCardsData = [
     {
@@ -18,7 +20,7 @@ import {
       },
     },
     {
-      color: "gray",
+      color: "blue",
       icon: UsersIcon,
       title: "Today's Users",
       value: "2,300",
@@ -29,7 +31,7 @@ import {
       },
     },
     {
-      color: "gray",
+      color: "yellow",
       icon: UserPlusIcon,
       title: "New Clients",
       value: "3,462",
@@ -40,7 +42,7 @@ import {
       },
     },
     {
-      color: "gray",
+      color: "red",
       icon: ChartBarIcon,
       title: "Sales",
       value: "$103,430",

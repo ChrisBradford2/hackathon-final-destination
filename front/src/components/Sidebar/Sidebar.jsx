@@ -4,16 +4,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faStickyNote, faTasks, faComments, faEnvelope, faClipboardList, faChartLine } from '@fortawesome/free-solid-svg-icons';
 
 const Sidebar = ({ setSidebarWidth }) => {
-  const handleMouseEnter = () => {
+  /* const handleMouseEnter = () => {
     setSidebarWidth(256);
   };
 
   const handleMouseLeave = () => {
     setSidebarWidth(112);
-  };
+  }; */
   return (
-    <nav className="sidebar" onMouseEnter={handleMouseEnter}
-    onMouseLeave={handleMouseLeave}>
+    <nav className="sidebar" //onMouseEnter={handleMouseEnter}
+    //onMouseLeave={handleMouseLeave}
+    >
       <ul>
         <li>
           <FontAwesomeIcon icon={faCalendarAlt} className="icon" />

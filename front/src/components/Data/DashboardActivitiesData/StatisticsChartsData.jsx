@@ -1,8 +1,8 @@
 import { icon } from "@fortawesome/fontawesome-svg-core";
+import { faCalendarWeek } from "@fortawesome/free-solid-svg-icons";
 import {
-    Square3Stack3DIcon,
-    UserCircleIcon,
-    Cog6ToothIcon,
+    CalendarDaysIcon,
+    CalendarIcon,
 } from "@heroicons/react/24/solid";
 
 const chartsConfig = {
@@ -173,30 +173,30 @@ const completedTasksChart = {
 export const statisticsChartsData = [
   {
     color: "white",
-    title: "Website View",
+    title: "Jour",
     value: "websiteview",
     description: "Last Campaign Performance",
     footer: "campaign sent 2 days ago",
     chart: websiteViewsChart,
-    icon: Square3Stack3DIcon,
+    icon: CalendarDaysIcon,
   },
   {
     color: "white",
-    title: "Daily Sales",
+    title: "Semaine",
     value: "daily",
     description: "15% increase in today sales",
     footer: "updated 4 min ago",
     chart: dailySalesChart,
-    icon:  UserCircleIcon,
+    icon:  CalendarIcon,
   },
   {
     color: "white",
-    title: "Completed Tasks",
+    title: "Mois",
     value: "completed",
     description: "Last Campaign Performance",
     footer: "just updated",
     chart: completedTasksChart,
-    icon: Cog6ToothIcon,
+    icon: CalendarIcon,
   },
 ];
 
