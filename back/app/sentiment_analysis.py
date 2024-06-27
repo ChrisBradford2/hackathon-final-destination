@@ -25,7 +25,7 @@ def analyze_sentiment(text):
         "5 stars": "Très positif"
     }
     sentiment = {
-        "label": label_map.get(result['label'], "Inconnu"),
+        "label": label_map.get(result['label'], "Inconnu").strip(),
         "score": result['score']
     }
     return sentiment

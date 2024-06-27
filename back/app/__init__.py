@@ -15,9 +15,9 @@ def create_app():
 
     CORS(app)  # Enable all origins
     db.init_app(app)
-    migrate = Migrate(app, db)  # Initialisation de Migrate après la création de l'app
+    migrate = Migrate(app, db)  # Initialize Migrate after the app creation
 
-    # Configuration des logs
+    # Log configuration
     if not app.debug:
         handler = logging.StreamHandler()
         handler.setLevel(logging.INFO)
@@ -25,12 +25,11 @@ def create_app():
 
     with app.app_context():
         whisperModel.init_whisper()
-        from .models import Audio, FileUpload, Sentiments  # Importer les modèles
-        from .routes import main  # Import du Blueprint
-        app.register_blueprint(main)  # Enregistrer le Blueprint
+        from .models import Audio, FileUpload, Sentiments  # Import models
+        from .routes import main  # Import Blueprint
+        app.register_blueprint(main)  # Register Blueprint
         db.create_all()
 
     load_dotenv()
-
 
     return app
