@@ -6,7 +6,6 @@ const Upload = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [formDataDebug, setFormDataDebug] = useState('');
 
   const handleFileChange = (event) => {
     setAudioFile(event.target.files[0]);
@@ -15,9 +14,8 @@ const Upload = () => {
   useEffect(() => {
     if (audioFile) {
       const formData = new FormData();
-      formData.append('file', audioFile); // Change 'audio' to 'file'
+      formData.append('file', audioFile);
       const entries = Array.from(formData.entries()).map(([key, value]) => `${key}: ${value.name || value}`);
-      setFormDataDebug(entries.join(', '));
     }
   }, [audioFile]);
 
@@ -33,16 +31,7 @@ const Upload = () => {
     }
 
     const formData = new FormData();
-    formData.append('file', audioFile); // Change 'audio' to 'file'
-
-    console.log('FormData contents before upload:', formDataDebug);
-    console.log('Uploading file...');
-    console.log('File:', audioFile);
-
-    // Check FormData contents
-    formData.forEach((value, key) => {
-      console.log(key, value);
-    });
+    formData.append('file', audioFile);
 
     try {
       const response = await fetch('http://localhost:5001/upload_audio', {
@@ -110,12 +99,6 @@ const Upload = () => {
 
       {error && <div className="text-red-500">{error}</div>}
       {success && <div className="text-green-500">{success}</div>}
-
-      {formDataDebug && (
-        <div className="text-gray-500 mt-2">
-          <strong>FormData Debug:</strong> {formDataDebug}
-        </div>
-      )}
 
       <div className="record-section mt-6">
         <h2>Enregistrer un Audio :</h2>
