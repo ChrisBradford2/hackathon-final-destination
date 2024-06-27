@@ -32,7 +32,7 @@ const App = () => {
       <div className="app flex">
         <Header />
         <Sidebar setSidebarWidth={setSidebarWidth} />
-        <div className="main-content ml-28 pt-16 p-5 flex-1 bg-gray-100 h-screen transition-all duration-300">
+        <div className="main-content ml-28 pt-16 p-5 flex-1 bg-white h-screen transition-all duration-300">
           <Routes>
             <Route path="/hackathon-final-destination/" element={<Home />} />
             <Route path="/hackathon-final-destination/upload" element={<Upload />} />

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ChevronDownIcon, ChevronUpIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/solid';
 
 export default function Audio() {
   const { id } = useParams();
@@ -9,6 +10,7 @@ export default function Audio() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [analyseLoading, setAnalyseLoading] = useState(false);
+  const [isTranscriptionOpen, setIsTranscriptionOpen] = useState(true);
 
   const fetchAudio = async () => {
     setLoading(true);
@@ -63,43 +65,77 @@ export default function Audio() {
     return <p className="text-center text-red-500">Error: {error.message}</p>;
   }
 
-  if (audio.sentiment && audio.sentiment.score !== null) {
-    audio.sentiment.score = (audio.sentiment.score * 10).toFixed(2);
+  if (audio.sentiment && audio.sentiment.score !== null && audio.sentiment.score < 1) {
+    audio.sentiment.score = (audio.sentiment.score * 100).toFixed(2);
   }
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Audio Details</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Audio Details</h1>
+        <div className={`flex items-center ${audio.isAnalysed ? 'text-green-500' : 'text-red-500'}`}>
+          {audio.isAnalysed ? <CheckCircleIcon className="w-5 h-5 mr-1" /> : <ExclamationCircleIcon className="w-5 h-5 mr-1" />}
+          <span>{audio.isAnalysed ? 'Analysed' : 'Not Analysed'}</span>
+        </div>
+      </div>
       <div className="space-y-4 text-gray-700">
+      <div className="flex justify-between items-center mb-6 bg-gray-50 px-8 rounded">
         <div>
           <span className="font-semibold">Audio ID:</span> {audio.id}
         </div>
         <div>
-          <span className="font-semibold">Created at:</span> {new Date(audio.createdAt).toLocaleString()}
+          <span className="font-semibold">Créé le:</span> {new Date(audio.createdAt).toLocaleString()}
+        </div>
         </div>
         <div>
           <span className="font-semibold">Audio:</span> 
-          <audio controls className="mt-2">
+          <audio controls className="mt-2 w-full">
             <source src={audio.url} type="audio/mpeg" />
-            Your browser does not support the audio element.
+            Votre navigateur ne supporte pas les éléments audio.
           </audio>
         </div>
         <div>
-          <span className="font-semibold">Analysed:</span> {audio.isAnalysed ? 'Yes' : 'No'}
+          <div className="flex items-center justify-between">
+            <span className="font-semibold">Transcription:</span>
+            <button onClick={() => setIsTranscriptionOpen(!isTranscriptionOpen)}>
+              {isTranscriptionOpen ? <ChevronUpIcon className="w-5 h-5" /> : <ChevronDownIcon className="w-5 h-5" />}
+            </button>
+          </div>
+          {isTranscriptionOpen && (
+            <textarea
+              readOnly
+              className="w-full mt-2 p-2 border rounded"
+              rows={5}
+              value={audio.transcription ? audio.transcription : 'Aucune description'}
+            />
+          )}
         </div>
+        <div className="flex space-x-8">
         <div>
-          <span className="font-semibold">Transcription:</span> {audio.transcription ? audio.transcription : 'None'}
+          <span className="font-semibold">Besoin d'aide: </span>
+          <span className={audio.isInNeed ? 'text-green-500' : 'text-red-500'}>
+            {audio.isInNeed ? 'Oui' : 'Non'}
+          </span>
         </div>
-        <div>
-          <span className="font-semibold">In need:</span> {audio.isInNeed ? 'Yes' : 'No'}
-        </div>
-        <div>
-          <span className="font-semibold">Sentiment:</span> {audio.sentiment ? (
-            <div className="ml-4">
-              <p><span className="font-semibold">Label:</span> {audio.sentiment.label}</p>
-              <p><span className="font-semibold">Score:</span> {audio.sentiment.score} %</p>
-            </div>
-          ) : 'None'}
+        <div className="flex items-center">
+            <span className="font-semibold mr-2">Sentiment:</span> 
+            {audio.sentiment ? (
+              <div className="ml-4">
+                <div className="flex items-center">
+                  <p>
+                    <span className="font-semibold">Label:</span> 
+                    <CheckCircleIcon className="w-5 h-5 text-green-500 mr-2" /> {audio.sentiment.label}
+                  </p>
+                </div>
+                <div className="mt-2">
+                  <p><span className="font-semibold">Score:</span></p>
+                  <div className="relative w-full h-4 bg-gray-200 rounded">
+                    <div className="absolute top-0 left-0 h-full bg-green-500 rounded" style={{ width: `${audio.sentiment.score}%` }}></div>
+                  </div>
+                </div>
+              </div>
+            ) : 'Aucun sentiment détecté'}
+          </div>
         </div>
         <div className="flex space-x-4">
           <button
@@ -108,7 +144,7 @@ export default function Audio() {
             disabled={analyseLoading}>
             {analyseLoading ? 'Analysing...' : audio.isAnalysed ? 'Re-analyse' : 'Analyse'}
           </button>
-          <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">Delete</button>
+          <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">Supprimer</button>
         </div>
       </div>
     </div>
