@@ -1,11 +1,10 @@
-import React, {  useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import Home from './pages/Home/Home';
 import './App.css';
 import Sidebar from './components/Sidebar/Sidebar';
-import Transcription from './pages/Transcriptions/Transcription';
 import Upload from './pages/Upload/Upload';
 import Audio from './pages/Audio/Audio';
 
@@ -20,36 +19,26 @@ const App = () => {
       }
     };
 
-    /* const adjustFooterMargin = () => {
-      const footer = document.querySelector('footer');
-      if(footer) {
-        footer.style.marginLeft = `${sidebarWidth - }px`
-      }
-    } */
-
     adjustHomeMargin();
-    //adjustFooterMargin();
 
     window.addEventListener('resize', adjustHomeMargin);
-    //window.addEventListener('resize', adjustFooterMargin);
     return () => {
       window.removeEventListener('resize', adjustHomeMargin);
-      //window.removeEventListener('resize', adjustFooterMargin);
     };
   }, [sidebarWidth]);
 
-
   return (
     <Router>
-      <div className="App">
+      <div className="app flex">
         <Header />
-        <Sidebar setSidebarWidth={setSidebarWidth}/>
-        <Routes>
-          <Route path="/hackathon-final-destination/" element={<Home/>} />
-          <Route path="/hackathon-final-destination/upload" element={<Upload/>} />
-          <Route path="/hackathon-final-destination/transcription" element={<Transcription/>} />
-          <Route path="/hackathon-final-destination/:id" element={<Audio/>} />
-        </Routes>
+        <Sidebar setSidebarWidth={setSidebarWidth} />
+        <div className="main-content ml-28 pt-16 p-5 flex-1 bg-gray-100 h-screen transition-all duration-300">
+          <Routes>
+            <Route path="/hackathon-final-destination/" element={<Home />} />
+            <Route path="/hackathon-final-destination/upload" element={<Upload />} />
+            <Route path="/hackathon-final-destination/:id" element={<Audio />} />
+          </Routes>
+        </div>
         <Footer />
       </div>
     </Router>
