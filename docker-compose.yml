@@ -1,16 +1,29 @@
-version: '3.8'
+version: "3.8"
 
 services:
   web:
-    build: .
+    build:
+      context: ./back
     ports:
       - "5001:5000"
     volumes:
-      - .:/app
+      - ./back:/app
     env_file:
-      - .env
+      - ./back/.env
     depends_on:
       - database
+
+  hub:
+    image: node:latest
+    environment:
+      PORT: 3000
+      ALLOWED_CLIENTS: aJC9Dg4i9qJCS6b7IN83ce7mYwxNhT0d
+    ports:
+      - 127.0.0.1:3000:3000
+    volumes:
+      - ./hub-sse:/home/node/app
+    working_dir: /home/node/app
+    command: sh -c 'npm install && npm run dev'
 
   database:
     image: postgres:11
@@ -29,7 +42,6 @@ services:
       - "8081:8080"
     depends_on:
       - database
-
 
 volumes:
   postgres_data:
