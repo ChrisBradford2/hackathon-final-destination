@@ -7,6 +7,8 @@ import './App.css';
 import Sidebar from './components/Sidebar/Sidebar';
 import Upload from './pages/Upload/Upload';
 import Audio from './pages/Audio/Audio';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
   const [sidebarWidth, setSidebarWidth] = useState(112);
@@ -41,6 +43,17 @@ const App = () => {
         </div>
         <Footer />
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Router>
   );
 };

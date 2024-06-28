@@ -2,31 +2,39 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ChevronDownIcon, ChevronRightIcon, CheckCircleIcon, ExclamationCircleIcon, ArrowLeftIcon } from '@heroicons/react/24/solid';
 import SentimentIndicator from '../../components/Icon/SentimentIndicator';
+import { useSelector, useDispatch } from 'react-redux';
+import io from 'socket.io-client';
+import { fetchAudio, analyseAudio, setProgress } from '../../utils/audioSlice';
 
 export default function Audio() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const [audio, setAudio] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [analyseLoading, setAnalyseLoading] = useState(false);
+  const dispatch = useDispatch();
+  const audio = useSelector((state) => state.audio.audios[id]);
+  const loading = useSelector((state) => state.audio.loading);
+  const error = useSelector((state) => state.audio.error);
+  const progress = useSelector((state) => state.audio.progress[id]);
+  const analyseLoading = useSelector((state) => state.audio.analyseLoading);
   const [isTranscriptionOpen, setIsTranscriptionOpen] = useState(true);
   const [showRawTranscription, setShowRawTranscription] = useState(false);
 
-  const fetchAudio = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`http://localhost:5001/audios/${id}`);
-      const data = await response.json();
-      setAudio(data);
-      setLoading(false);
-    } catch (error) {
-      setError(error);
-      setLoading(false);
-      //console.error(error);
-    }
-  };
+  useEffect(() => {
+    const socket = io('http://localhost:5001');  // Assurez-vous que l'URL correspond à votre backend
+
+    socket.on('processing_update', (data) => {
+      if (data.audio_id === parseInt(id)) {
+        dispatch(setProgress({ audioId: id, status: data.status }));
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [id, dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchAudio(id));
+  }, [id, dispatch]);
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this audio?')) {
@@ -36,39 +44,36 @@ export default function Audio() {
         });
         navigate('/hackathon-final-destination/');
       } catch (error) {
-        setError(error);
+        dispatch(setError(error));
       }
     }
   };
 
-  const handleAnalyse = async () => {
-    setAnalyseLoading(true);
-    try {
-      await fetch(`http://localhost:5001/process_audio/${id}`, {
-        method: 'POST',
-      });
-      await fetchAudio();
-      setAnalyseLoading(false);
-    } catch (error) {
-      setError(error);
-      setAnalyseLoading(false);
+  const handleAnalyse = () => {
+    dispatch(analyseAudio(id));
+  };
+
+  const getProgressBar = (label, score) => {
+    switch (label) {
+      case 'NEUTRE':
+        return <div className="absolute top-0 left-0 h-full bg-orange-500 rounded text-xs" style={{ width: `50%` }}>{score}%</div>
+      case 'POSITIF':
+        return <div className="absolute top-0 left-0 h-full bg-green-500 rounded" style={{ width: `70%` }}>{score}%</div>
+      case 'TRES_POSITIF':
+        return <div className="absolute top-0 left-0 h-full bg-green-700 rounded" style={{ width: `90%` }}>{score}%</div>
+      case 'NEGATIF':
+        return <div className="absolute top-0 left-0 h-full bg-red-500 rounded" style={{ width: `30%` }}>{score}%</div>
+      case 'TRES_NEGATIF':
+        return <div className="absolute top-0 left-0 h-full bg-red-700 rounded text-xs" style={{ width: `10%` }}>{score}%</div>
+      default:
+        return <div className="absolute top-0 left-0 h-full rounded" style={{ width: `0%` }}></div>
     }
   };
 
-  const getProgressBar = (label) => {
-    switch (label) {
-      case 'NEUTRE':
-        return <div className="absolute top-0 left-0 h-full bg-orange-500 rounded" style={{ width: `50%` }}></div>
-      case 'POSITIF':
-        return <div className="absolute top-0 left-0 h-full bg-green-500 rounded" style={{ width: `70%` }}></div>
-      case 'TRES_POSITIF':
-        return <div className="absolute top-0 left-0 h-full bg-green-700 rounded" style={{ width: `90%` }}></div>
-      case 'NEGATIF':
-        return <div className="absolute top-0 left-0 h-full bg-red-500 rounded" style={{ width: `30%` }}></div>
-      case 'TRES_NEGATIF':
-        return <div className="absolute top-0 left-0 h-full bg-red-700 rounded" style={{ width: `10%` }}></div>
-      default:
-        return <div className="absolute top-0 left-0 h-full rounded" style={{ width: `0%` }}></div>
+  const dismissAlert = () => {
+    const alertElement = document.getElementById(id);
+    if (alertElement) {
+      alertElement.remove();
     }
   };
 
@@ -84,9 +89,13 @@ export default function Audio() {
     return <p className="text-center text-red-500">Error: {error.message}</p>;
   }
 
-  if (audio.sentiment && audio.sentiment.score !== null && audio.sentiment.score < 1) {
-    audio.sentiment.score = (audio.sentiment.score * 100).toFixed(2);
+  if (!audio) {
+    return <p className="text-center text-gray-500">Audio not found</p>;
   }
+
+  const sentimentScore = audio.sentiment && audio.sentiment.score !== null && audio.sentiment.score < 1
+    ? (audio.sentiment.score * 100).toFixed(2)
+    : audio.sentiment?.score;
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg mt-6 shadow-2xl">
@@ -101,13 +110,13 @@ export default function Audio() {
         </div>
       </div>
       <div className="space-y-4 text-gray-700">
-      <div className="flex justify-between items-center mb-6 bg-gray-50 px-8 rounded">
-        <div>
-          <span className="font-semibold">Audio ID:</span> {audio.id}
-        </div>
-        <div>
-          <span className="font-semibold">Créé le:</span> {new Date(audio.createdAt).toLocaleString()}
-        </div>
+        <div className="flex justify-between items-center mb-6 bg-gray-50 px-8 rounded">
+          <div>
+            <span className="font-semibold">Audio ID:</span> {audio.id}
+          </div>
+          <div>
+            <span className="font-semibold">Créé le:</span> {new Date(audio.createdAt).toLocaleString()}
+          </div>
         </div>
         <div>
           <span className="font-semibold">Audio:</span> 
@@ -116,6 +125,29 @@ export default function Audio() {
             Votre navigateur ne supporte pas les éléments audio.
           </audio>
         </div>
+        {progress && (
+          <div id={id} className="flex items-center p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50" role="alert">
+          <svg className="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+          </svg>
+          <span className="font-medium ml-2">Progression: </span> 
+          <div className="ml-1 font-medium">
+            {progress}
+          </div>
+          <button
+            type="button"
+            onClick={dismissAlert}
+            className="ml-auto -mx-1.5 -my-1.5 bg-blue-50 text-blue-500 rounded-lg focus:ring-2 focus:ring-blue-400 p-1.5 hover:bg-blue-200 inline-flex items-center justify-center h-8 w-8"
+            aria-label="Close"
+          >
+            <span className="sr-only">Close</span>
+            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+          </button>
+        </div>
+        )}
+        
         <div>
           <div className="flex items-center justify-between">
             <span className="font-semibold">Transcription:</span>
@@ -152,8 +184,7 @@ export default function Audio() {
                       <div className="flex items-center">
                         <p><span className="font-medium mr-2">Score:</span></p>
                         <div className="relative w-40 h-4 bg-gray-200 rounded">
-                          {getProgressBar(audio.sentiment.label)}
-                          {/* <div className="absolute top-0 left-0 h-full bg-green-500 rounded" style={{ width: `${audio.sentiment.score}%` }}></div> */}
+                          {getProgressBar(audio.sentiment.label, sentimentScore)}
                         </div>
                       </div>
                     </>

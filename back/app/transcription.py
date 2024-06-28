@@ -5,7 +5,6 @@ import requests
 from app.whisperModel import stt_model
 
 def transcribe_audio(audio_file):
-
     if stt_model is None:
         raise ValueError("Whisper model is not initialized. Check model loading.")
 
@@ -15,8 +14,8 @@ def transcribe_audio(audio_file):
         temp_audio_path = temp_audio.name
 
     try:
-        # Transcribe the audio
-        result = stt_model.transcribe(audio_file, language="fr", fp16=False)
+        # Ensure the audio file is in the correct format for transcription
+        result = stt_model.transcribe(temp_audio_path, language="fr", fp16=False)
         transcription = result["text"]
     except Exception as e:
         raise ValueError(f"Error during transcription: {str(e)}")
@@ -24,9 +23,6 @@ def transcribe_audio(audio_file):
         # Remove the temporary audio file
         os.remove(temp_audio_path)
 
-    # Supprimer le fichier temporaire
-    os.remove(temp_audio_path)
-    
     return transcription
 
 def download_audio(url):
@@ -35,7 +31,6 @@ def download_audio(url):
     return BytesIO(response.content)
 
 def transcribe_audio_from_url(url):
-
     if stt_model is None:
         raise ValueError("Whisper model is not initialized. Check model loading.")
     audio_data = download_audio(url)
@@ -44,9 +39,14 @@ def transcribe_audio_from_url(url):
         temp_audio.write(audio_data.read())
         temp_audio_path = temp_audio.name
 
-    result = stt_model.transcribe(temp_audio_path, language="french")
-    transcription = result["text"]
-
-    os.remove(temp_audio_path)
+    try:
+        # Ensure the audio file is in the correct format for transcription
+        result = stt_model.transcribe(temp_audio_path, language="fr", fp16=False)
+        transcription = result["text"]
+    except Exception as e:
+        raise ValueError(f"Error during transcription: {str(e)}")
+    finally:
+        # Remove the temporary audio file
+        os.remove(temp_audio_path)
 
     return transcription

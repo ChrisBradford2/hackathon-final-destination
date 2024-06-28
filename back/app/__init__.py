@@ -1,3 +1,4 @@
+from flask_socketio import SocketIO
 import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -8,6 +9,7 @@ from dotenv import load_dotenv
 import app.whisperModel as whisperModel
 
 db = SQLAlchemy()
+socketio = SocketIO()
 
 def create_app():
     app = Flask(__name__)
@@ -31,5 +33,7 @@ def create_app():
         db.create_all()
 
     load_dotenv()
+
+    socketio.init_app(app, cors_allowed_origins="*")  # Initialize SocketIO after app creation
 
     return app
