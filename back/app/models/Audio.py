@@ -16,7 +16,8 @@ class Audio(db.Model):
     url = db.Column(db.String(255), nullable=False)
     
     # One-to-one relationship with Sentiments
-    sentiment = db.relationship('Sentiments', backref='audio', uselist=False)
+    sentiment = db.relationship('Sentiments', backref='audio', uselist=False, cascade='all, delete-orphan')
+
 
     # Foreign key linking to FileUpload
     file_upload_id = db.Column(db.Integer, db.ForeignKey('file_upload.id'), nullable=False)
