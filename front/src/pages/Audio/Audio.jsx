@@ -1,47 +1,39 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { ChevronDownIcon, ChevronUpIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/solid';
 import io from 'socket.io-client';
+import { fetchAudio, analyseAudio, setProgress } from '../../utils/audioSlice';
 
 export default function Audio() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const [audio, setAudio] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [analyseLoading, setAnalyseLoading] = useState(false);
+  const dispatch = useDispatch();
+  const audio = useSelector((state) => state.audio.audios[id]);
+  const loading = useSelector((state) => state.audio.loading);
+  const error = useSelector((state) => state.audio.error);
+  const progress = useSelector((state) => state.audio.progress[id]);
+  const analyseLoading = useSelector((state) => state.audio.analyseLoading);
   const [isTranscriptionOpen, setIsTranscriptionOpen] = useState(true);
   const [showRawTranscription, setShowRawTranscription] = useState(false);
-  const [progress, setProgress] = useState('');
 
   useEffect(() => {
-    const socket = io('http://localhost:5001');
+    const socket = io('http://localhost:5001');  // Assurez-vous que l'URL correspond à votre backend
 
     socket.on('processing_update', (data) => {
       if (data.audio_id === parseInt(id)) {
-        setProgress(data.status);
+        dispatch(setProgress({ audioId: id, status: data.status }));
       }
     });
 
     return () => {
       socket.disconnect();
     };
-  }, [id]);
+  }, [id, dispatch]);
 
-  const fetchAudio = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`http://localhost:5001/audios/${id}`);
-      const data = await response.json();
-      setAudio(data);
-      setLoading(false);
-    } catch (error) {
-      setError(error);
-      setLoading(false);
-      console.error(error);
-    }
-  };
+  useEffect(() => {
+    dispatch(fetchAudio(id));
+  }, [id, dispatch]);
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this audio?')) {
@@ -51,28 +43,14 @@ export default function Audio() {
         });
         navigate('/hackathon-final-destination/');
       } catch (error) {
-        setError(error);
+        dispatch(setError(error));
       }
     }
   };
 
-  const handleAnalyse = async () => {
-    setAnalyseLoading(true);
-    try {
-      await fetch(`http://localhost:5001/process_audio/${id}`, {
-        method: 'POST',
-      });
-      await fetchAudio();
-      setAnalyseLoading(false);
-    } catch (error) {
-      setError(error);
-      setAnalyseLoading(false);
-    }
+  const handleAnalyse = () => {
+    dispatch(analyseAudio(id));
   };
-
-  useEffect(() => {
-    fetchAudio();
-  }, []);
 
   if (loading) {
     return <p className="text-center text-gray-500">Loading...</p>;
@@ -82,9 +60,13 @@ export default function Audio() {
     return <p className="text-center text-red-500">Error: {error.message}</p>;
   }
 
-  if (audio.sentiment && audio.sentiment.score !== null && audio.sentiment.score < 1) {
-    audio.sentiment.score = (audio.sentiment.score * 100).toFixed(2);
+  if (!audio) {
+    return <p className="text-center text-gray-500">Audio not found</p>;
   }
+
+  const sentimentScore = audio.sentiment && audio.sentiment.score !== null && audio.sentiment.score < 1
+    ? (audio.sentiment.score * 100).toFixed(2)
+    : audio.sentiment?.score;
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
@@ -178,7 +160,7 @@ export default function Audio() {
                   <div className="flex items-center">
                     <p><span className="font-medium mr-2">Score:</span></p>
                     <div className="relative w-40 h-4 bg-gray-200 rounded">
-                      <div className="absolute top-0 left-0 h-full bg-green-500 rounded" style={{ width: `${audio.sentiment.score}%` }}></div>
+                      <div className="absolute top-0 left-0 h-full bg-green-500 rounded" style={{ width: `${sentimentScore}%` }}></div>
                     </div>
                   </div>
                 </>
