@@ -120,7 +120,6 @@ def process_audio(audio_id):
         audio = Audio.query.get(audio_id)
         if not audio:
             return jsonify({"error": "Audio not found"}), 404
-
         try:
             # Transcribe the audio
             transcription = transcribe_audio_from_url(audio.url)
@@ -156,7 +155,7 @@ def process_audio(audio_id):
 
         try:
             # Analyze the sentiment
-            sentiment_result = analyze_sentiment(audio.transcription)
+            sentiment_result = analyze_sentiment(transcription)
             sentiment_label_str = sentiment_result['label']
             sentiment_score = sentiment_result['score']
 
@@ -164,7 +163,17 @@ def process_audio(audio_id):
 
             try:
                 # Normalize the sentiment label to match the enum values
-                sentiment_label = Label[sentiment_label_str.replace(" ", "_").upper()]
+                sentiment_label_map = {
+                    "Très négatif": Label.TRES_NEGATIF,
+                    "Négatif": Label.NEGATIF,
+                    "Neutre": Label.NEUTRE,
+                    "Positif": Label.POSITIF,
+                    "Très positif": Label.TRES_POSITIF
+                }
+                sentiment_label = sentiment_label_map.get(sentiment_label_str)
+                if sentiment_label is None:
+                    raise KeyError
+
             except KeyError:
                 current_app.logger.error(f"Sentiment label '{sentiment_label_str}' not found in Label enum")
                 return jsonify({"error": f"Invalid sentiment label: {sentiment_label_str}"}), 500
