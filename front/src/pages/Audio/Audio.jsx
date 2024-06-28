@@ -133,34 +133,34 @@ export default function Audio() {
           )}
         </div>
         <div className="flex space-x-8 justify-between">
-        <div>
-          <span className="font-semibold">Besoin d'aide: </span>
-          <span className={audio.isInNeed ? 'text-green-500' : (audio.isInNeed === false ? 'text-red-500' : 'text-gray-500')}>
-            {audio.isInNeed ? 'Oui' : (audio.isInNeed === false ? 'Non' : 'Aucune analyse effectuée')}
-          </span>
-        </div>
-        <div className="flex flex-col space-y-4">
-          <div className="flex items-center justify-between space-x-3">
-              <span className="font-semibold">Sentiment:</span> 
-              {audio.sentiment ? (
-                  <>
-                    <div className="flex items-center space-x-1">
-                      <p className="flex items-center">
-                        <SentimentIndicator sentiment={audio.sentiment.label} />
-                      </p>
-                    </div>
-                    <div className="flex items-center">
-                      <p><span className="font-medium mr-2">Score:</span></p>
-                      <div className="relative w-40 h-4 bg-gray-200 rounded">
-                        {getProgressBar(audio.sentiment.label)}
-                        {/* <div className="absolute top-0 left-0 h-full bg-green-500 rounded" style={{ width: `${audio.sentiment.score}%` }}></div> */}
-                      </div>
-                    </div>
-                  </>
-                
-              ) : 'Aucune analyse effectuée'}
+          <div>
+            <span className="font-semibold">Besoin d'aide: </span>
+            <span className={audio.isInNeed ? 'text-green-500' : (audio.isInNeed === false ? 'text-red-500' : 'text-gray-500')}>
+              {audio.isInNeed ? 'Oui' : (audio.isInNeed === false ? 'Non' : 'Aucune analyse effectuée')}
+            </span>
           </div>
-        </div>
+          <div className="flex flex-col space-y-4">
+            <div className="flex items-center justify-between space-x-3">
+                <span className="font-semibold">Sentiment:</span> 
+                {audio.sentiment ? (
+                    <>
+                      <div className="flex items-center space-x-1">
+                        <p className="flex items-center">
+                          <SentimentIndicator sentiment={audio.sentiment.label} />
+                        </p>
+                      </div>
+                      <div className="flex items-center">
+                        <p><span className="font-medium mr-2">Score:</span></p>
+                        <div className="relative w-40 h-4 bg-gray-200 rounded">
+                          {getProgressBar(audio.sentiment.label)}
+                          {/* <div className="absolute top-0 left-0 h-full bg-green-500 rounded" style={{ width: `${audio.sentiment.score}%` }}></div> */}
+                        </div>
+                      </div>
+                    </>
+                  
+                ) : 'Aucune analyse effectuée'}
+            </div>
+          </div>
         </div>
         <button
             className="flex items-center space-x-1 focus:outline-none"
