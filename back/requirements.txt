@@ -14,3 +14,4 @@ python-dotenv
 accelerate
 requests
 twilio
+flask-socketio

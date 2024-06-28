@@ -1,31 +1,39 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { ChevronDownIcon, ChevronUpIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/solid';
+import io from 'socket.io-client';
+import { fetchAudio, analyseAudio, setProgress } from '../../utils/audioSlice';
 
 export default function Audio() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const [audio, setAudio] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [analyseLoading, setAnalyseLoading] = useState(false);
+  const dispatch = useDispatch();
+  const audio = useSelector((state) => state.audio.audios[id]);
+  const loading = useSelector((state) => state.audio.loading);
+  const error = useSelector((state) => state.audio.error);
+  const progress = useSelector((state) => state.audio.progress[id]);
+  const analyseLoading = useSelector((state) => state.audio.analyseLoading);
   const [isTranscriptionOpen, setIsTranscriptionOpen] = useState(true);
   const [showRawTranscription, setShowRawTranscription] = useState(false);
 
-  const fetchAudio = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`http://localhost:5001/audios/${id}`);
-      const data = await response.json();
-      setAudio(data);
-      setLoading(false);
-    } catch (error) {
-      setError(error);
-      setLoading(false);
-      console.error(error);
-    }
-  };
+  useEffect(() => {
+    const socket = io('http://localhost:5001');  // Assurez-vous que l'URL correspond à votre backend
+
+    socket.on('processing_update', (data) => {
+      if (data.audio_id === parseInt(id)) {
+        dispatch(setProgress({ audioId: id, status: data.status }));
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [id, dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchAudio(id));
+  }, [id, dispatch]);
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this audio?')) {
@@ -35,28 +43,14 @@ export default function Audio() {
         });
         navigate('/hackathon-final-destination/');
       } catch (error) {
-        setError(error);
+        dispatch(setError(error));
       }
     }
   };
 
-  const handleAnalyse = async () => {
-    setAnalyseLoading(true);
-    try {
-      await fetch(`http://localhost:5001/process_audio/${id}`, {
-        method: 'POST',
-      });
-      await fetchAudio();
-      setAnalyseLoading(false);
-    } catch (error) {
-      setError(error);
-      setAnalyseLoading(false);
-    }
+  const handleAnalyse = () => {
+    dispatch(analyseAudio(id));
   };
-
-  useEffect(() => {
-    fetchAudio();
-  }, []);
 
   if (loading) {
     return <p className="text-center text-gray-500">Loading...</p>;
@@ -66,9 +60,13 @@ export default function Audio() {
     return <p className="text-center text-red-500">Error: {error.message}</p>;
   }
 
-  if (audio.sentiment && audio.sentiment.score !== null && audio.sentiment.score < 1) {
-    audio.sentiment.score = (audio.sentiment.score * 100).toFixed(2);
+  if (!audio) {
+    return <p className="text-center text-gray-500">Audio not found</p>;
   }
+
+  const sentimentScore = audio.sentiment && audio.sentiment.score !== null && audio.sentiment.score < 1
+    ? (audio.sentiment.score * 100).toFixed(2)
+    : audio.sentiment?.score;
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
@@ -80,13 +78,13 @@ export default function Audio() {
         </div>
       </div>
       <div className="space-y-4 text-gray-700">
-      <div className="flex justify-between items-center mb-6 bg-gray-50 px-8 rounded">
-        <div>
-          <span className="font-semibold">Audio ID:</span> {audio.id}
-        </div>
-        <div>
-          <span className="font-semibold">Créé le:</span> {new Date(audio.createdAt).toLocaleString()}
-        </div>
+        <div className="flex justify-between items-center mb-6 bg-gray-50 px-8 rounded">
+          <div>
+            <span className="font-semibold">Audio ID:</span> {audio.id}
+          </div>
+          <div>
+            <span className="font-semibold">Créé le:</span> {new Date(audio.createdAt).toLocaleString()}
+          </div>
         </div>
         <div>
           <span className="font-semibold">Audio:</span> 
@@ -112,61 +110,63 @@ export default function Audio() {
           )}
         </div>
         <div className="flex space-x-8 justify-between">
-        <div>
-          <span className="font-semibold">Besoin d'aide: </span>
-          <span className={audio.isInNeed ? 'text-green-500' : 'text-red-500'}>
-            {audio.isInNeed ? 'Oui' : 'Non'}
-          </span>
-          <button
-            className="flex items-center space-x-1 focus:outline-none"
-            onClick={() => setShowRawTranscription(!showRawTranscription)}
-          >
-            <span>Show Transcription</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className={`w-6 h-6 transition-transform ${
-                showRawTranscription ? 'transform rotate-180' : ''
-              }`}
+          <div>
+            <span className="font-semibold">Besoin d'aide: </span>
+            <span className={audio.isInNeed ? 'text-green-500' : 'text-red-500'}>
+              {audio.isInNeed ? 'Oui' : 'Non'}
+            </span>
+            <button
+              className="flex items-center space-x-1 focus:outline-none"
+              onClick={() => setShowRawTranscription(!showRawTranscription)}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m19.5 8.25-7.5 7.5-7.5-7.5"
-              />
-            </svg>
-          </button>
-          {showRawTranscription && (
-            <div className="mt-2">
-              <span className="font-semibold">Raw Transcription:</span>{' '}
-              {audio.raw_transcription ? audio.raw_transcription : 'None'}
-            </div>
-          )}
-        </div>
-        <div>
-          <span className="font-semibold">Transcription:</span> {audio.transcription ? audio.transcription : 'None'}
-        </div>
-        <div className="flex flex-col space-y-4">
-        <div className="flex items-center justify-between space-x-3">
-            <span className="font-semibold">Sentiment:</span> 
-            {audio.sentiment ? (
-                <><div className="flex items-center space-x-2">
-                  <p className="flex items-center">
-                    <CheckCircleIcon className="w-5 h-5 text-green-500 mr-1" /> {audio.sentiment.label}
-                  </p>
-                </div><div className="flex items-center">
+              <span>Show Transcription</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className={`w-6 h-6 transition-transform ${
+                  showRawTranscription ? 'transform rotate-180' : ''
+                }`}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m19.5 8.25-7.5 7.5-7.5-7.5"
+                />
+              </svg>
+            </button>
+            {showRawTranscription && (
+              <div className="mt-2">
+                <span className="font-semibold">Raw Transcription:</span>{' '}
+                {audio.raw_transcription ? audio.raw_transcription : 'None'}
+              </div>
+            )}
+          </div>
+          <div>
+            <span className="font-semibold">Transcription:</span> {audio.transcription ? audio.transcription : 'None'}
+          </div>
+          <div className="flex flex-col space-y-4">
+            <div className="flex items-center justify-between space-x-3">
+              <span className="font-semibold">Sentiment:</span> 
+              {audio.sentiment ? (
+                <>
+                  <div className="flex items-center space-x-2">
+                    <p className="flex items-center">
+                      <CheckCircleIcon className="w-5 h-5 text-green-500 mr-1" /> {audio.sentiment.label}
+                    </p>
+                  </div>
+                  <div className="flex items-center">
                     <p><span className="font-medium mr-2">Score:</span></p>
                     <div className="relative w-40 h-4 bg-gray-200 rounded">
-                      <div className="absolute top-0 left-0 h-full bg-green-500 rounded" style={{ width: `${audio.sentiment.score}%` }}></div>
+                      <div className="absolute top-0 left-0 h-full bg-green-500 rounded" style={{ width: `${sentimentScore}%` }}></div>
                     </div>
-                  </div></>
-              
-            ) : 'Aucun sentiment détecté'}
+                  </div>
+                </>
+              ) : 'Aucun sentiment détecté'}
+            </div>
           </div>
-        </div>
         </div>
         <div className="flex space-x-4">
           <button
@@ -177,6 +177,11 @@ export default function Audio() {
           </button>
           <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">Supprimer</button>
         </div>
+        {progress && (
+          <div className="mt-4 p-4 bg-gray-100 rounded-md">
+            <p className="text-center text-gray-700">Progress: {progress}</p>
+          </div>
+        )}
       </div>
     </div>
   );
