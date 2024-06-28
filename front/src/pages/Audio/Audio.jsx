@@ -24,7 +24,7 @@ export default function Audio() {
     } catch (error) {
       setError(error);
       setLoading(false);
-      console.error(error);
+      //console.error(error);
     }
   };
 
@@ -201,7 +201,12 @@ export default function Audio() {
             disabled={analyseLoading}>
             {analyseLoading ? 'Analysing...' : audio.isAnalysed ? 'Re-analyse' : 'Analyse'}
           </button>
-          <button onClick={handleDelete} disabled={analyseLoading} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">Supprimer</button>
+          <button 
+          onClick={handleDelete} 
+          disabled={analyseLoading} 
+          className={`px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 ${analyseLoading ? 'cursor-not-allowed opacity-50 animate-pulse' : ''}`}>
+            Supprimer
+            </button>
         </div>
       </div>
     </div>
