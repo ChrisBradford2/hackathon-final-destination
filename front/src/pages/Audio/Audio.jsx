@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronDownIcon, ChevronUpIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/solid';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { ChevronDownIcon, ChevronRightIcon, CheckCircleIcon, ExclamationCircleIcon, ArrowLeftIcon } from '@heroicons/react/24/solid';
 import SentimentIndicator from '../../components/Icon/SentimentIndicator';
 
 export default function Audio() {
@@ -88,11 +88,12 @@ export default function Audio() {
     audio.sentiment.score = (audio.sentiment.score * 100).toFixed(2);
   }
 
-  console.log(audio);
-
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg mt-6 shadow-2xl">
       <div className="flex justify-between items-center mb-6">
+        <Link to="/hackathon-final-destination/" className="return">
+          <ArrowLeftIcon className='w-5 h-5 items-center'></ArrowLeftIcon>
+        </Link>
         <h1 className="text-3xl font-bold text-gray-800">Audio Details</h1>
         <div className={`flex items-center ${audio.isAnalysed ? 'text-green-500' : 'text-red-500'}`}>
           {audio.isAnalysed ? <CheckCircleIcon className="w-5 h-5 mr-1" /> : <ExclamationCircleIcon className="w-5 h-5 mr-1" />}
@@ -119,7 +120,7 @@ export default function Audio() {
           <div className="flex items-center justify-between">
             <span className="font-semibold">Transcription:</span>
             <button onClick={() => setIsTranscriptionOpen(!isTranscriptionOpen)}>
-              {isTranscriptionOpen ? <ChevronUpIcon className="w-5 h-5" /> : <ChevronDownIcon className="w-5 h-5" />}
+              {isTranscriptionOpen ? <ChevronRightIcon className="w-5 h-5" /> : <ChevronDownIcon className="w-5 h-5" />}
             </button>
           </div>
           {isTranscriptionOpen && (
@@ -165,7 +166,7 @@ export default function Audio() {
             className="flex items-center space-x-1 focus:outline-none"
             onClick={() => setShowRawTranscription(!showRawTranscription)}
           >
-            <span>Voir la transcription compléte</span>
+            <span className='font-semibold'>Voir la transcription compléte</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -173,7 +174,7 @@ export default function Audio() {
               strokeWidth={1.5}
               stroke="currentColor"
               className={`w-6 h-6 transition-transform ${
-                showRawTranscription ? 'transform rotate-180' : ''
+                showRawTranscription ? 'transform -rotate-90' : ''
               }`}
             >
               <path

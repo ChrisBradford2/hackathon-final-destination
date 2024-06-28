@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { ExclamationCircleIcon } from '@heroicons/react/24/solid';
 
 
 const getSentimentIcon = (label) => {
@@ -12,9 +12,9 @@ const getSentimentIcon = (label) => {
     case 'TRES_POSITIF':
       return { icon: <CheckCircleIcon className="w-5 h-5 text-green-700 mr-1" />, color: 'text-green-700' };
     case 'NEGATIF':
-      return { icon: <ExclamationTriangleIcon className="w-5 h-5 text-red-500 mr-1" />, color: 'text-red-500' };
+      return { icon: <ExclamationCircleIcon className="w-5 h-5 text-red-500 mr-1" />, color: 'text-red-500' };
     case 'TRES_NEGATIF':
-      return { icon: <ExclamationTriangleIcon className="w-5 h-5 text-red-700 mr-1" />, color: 'text-red-700' };
+      return { icon: <ExclamationCircleIcon className="w-5 h-5 text-red-700 mr-1" />, color: 'text-red-700' };
     default:
       return { icon: '', color: 'text-gray-500' };
   }
