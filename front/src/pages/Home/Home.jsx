@@ -125,14 +125,14 @@ const Home = () => {
                       id={`checkbox-${index}`}
                       type="checkbox"
                       className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                      checked={selectedRows.includes(item.numeroOperation)}
-                      onChange={() => handleSelectRow(item.numeroOperation)}
+                      checked={selectedRows.includes(item.id)}
+                      onChange={() => handleSelectRow(item.id)}
                     />
                     <label htmlFor={`checkbox-${index}`} className="sr-only">checkbox</label>
                   </div>
                 </td>
                 <td className="p-3">
-                  <Link to={`/hackathon-final-destination/${item.numeroOperation}`} className="text-blue-600 hover:text-blue-800 cursor-pointer">
+                  <Link to={`/hackathon-final-destination/${item.id}`} className="text-blue-600 hover:text-blue-800 cursor-pointer">
                     <FontAwesomeIcon icon={faFileAudio} className="text-blue-600 hover:text-blue-800 cursor-pointer" />
                   </Link>
                 </td>
