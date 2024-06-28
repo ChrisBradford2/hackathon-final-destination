@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, ChevronUpIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/solid';
+import io from 'socket.io-client';
 
 export default function Audio() {
   const { id } = useParams();
@@ -12,6 +13,21 @@ export default function Audio() {
   const [analyseLoading, setAnalyseLoading] = useState(false);
   const [isTranscriptionOpen, setIsTranscriptionOpen] = useState(true);
   const [showRawTranscription, setShowRawTranscription] = useState(false);
+  const [progress, setProgress] = useState('');
+
+  useEffect(() => {
+    const socket = io('http://localhost:5001');
+
+    socket.on('processing_update', (data) => {
+      if (data.audio_id === parseInt(id)) {
+        setProgress(data.status);
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [id]);
 
   const fetchAudio = async () => {
     setLoading(true);
@@ -80,13 +96,13 @@ export default function Audio() {
         </div>
       </div>
       <div className="space-y-4 text-gray-700">
-      <div className="flex justify-between items-center mb-6 bg-gray-50 px-8 rounded">
-        <div>
-          <span className="font-semibold">Audio ID:</span> {audio.id}
-        </div>
-        <div>
-          <span className="font-semibold">Créé le:</span> {new Date(audio.createdAt).toLocaleString()}
-        </div>
+        <div className="flex justify-between items-center mb-6 bg-gray-50 px-8 rounded">
+          <div>
+            <span className="font-semibold">Audio ID:</span> {audio.id}
+          </div>
+          <div>
+            <span className="font-semibold">Créé le:</span> {new Date(audio.createdAt).toLocaleString()}
+          </div>
         </div>
         <div>
           <span className="font-semibold">Audio:</span> 
@@ -112,61 +128,63 @@ export default function Audio() {
           )}
         </div>
         <div className="flex space-x-8 justify-between">
-        <div>
-          <span className="font-semibold">Besoin d'aide: </span>
-          <span className={audio.isInNeed ? 'text-green-500' : 'text-red-500'}>
-            {audio.isInNeed ? 'Oui' : 'Non'}
-          </span>
-          <button
-            className="flex items-center space-x-1 focus:outline-none"
-            onClick={() => setShowRawTranscription(!showRawTranscription)}
-          >
-            <span>Show Transcription</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className={`w-6 h-6 transition-transform ${
-                showRawTranscription ? 'transform rotate-180' : ''
-              }`}
+          <div>
+            <span className="font-semibold">Besoin d'aide: </span>
+            <span className={audio.isInNeed ? 'text-green-500' : 'text-red-500'}>
+              {audio.isInNeed ? 'Oui' : 'Non'}
+            </span>
+            <button
+              className="flex items-center space-x-1 focus:outline-none"
+              onClick={() => setShowRawTranscription(!showRawTranscription)}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m19.5 8.25-7.5 7.5-7.5-7.5"
-              />
-            </svg>
-          </button>
-          {showRawTranscription && (
-            <div className="mt-2">
-              <span className="font-semibold">Raw Transcription:</span>{' '}
-              {audio.raw_transcription ? audio.raw_transcription : 'None'}
-            </div>
-          )}
-        </div>
-        <div>
-          <span className="font-semibold">Transcription:</span> {audio.transcription ? audio.transcription : 'None'}
-        </div>
-        <div className="flex flex-col space-y-4">
-        <div className="flex items-center justify-between space-x-3">
-            <span className="font-semibold">Sentiment:</span> 
-            {audio.sentiment ? (
-                <><div className="flex items-center space-x-2">
-                  <p className="flex items-center">
-                    <CheckCircleIcon className="w-5 h-5 text-green-500 mr-1" /> {audio.sentiment.label}
-                  </p>
-                </div><div className="flex items-center">
+              <span>Show Transcription</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className={`w-6 h-6 transition-transform ${
+                  showRawTranscription ? 'transform rotate-180' : ''
+                }`}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m19.5 8.25-7.5 7.5-7.5-7.5"
+                />
+              </svg>
+            </button>
+            {showRawTranscription && (
+              <div className="mt-2">
+                <span className="font-semibold">Raw Transcription:</span>{' '}
+                {audio.raw_transcription ? audio.raw_transcription : 'None'}
+              </div>
+            )}
+          </div>
+          <div>
+            <span className="font-semibold">Transcription:</span> {audio.transcription ? audio.transcription : 'None'}
+          </div>
+          <div className="flex flex-col space-y-4">
+            <div className="flex items-center justify-between space-x-3">
+              <span className="font-semibold">Sentiment:</span> 
+              {audio.sentiment ? (
+                <>
+                  <div className="flex items-center space-x-2">
+                    <p className="flex items-center">
+                      <CheckCircleIcon className="w-5 h-5 text-green-500 mr-1" /> {audio.sentiment.label}
+                    </p>
+                  </div>
+                  <div className="flex items-center">
                     <p><span className="font-medium mr-2">Score:</span></p>
                     <div className="relative w-40 h-4 bg-gray-200 rounded">
                       <div className="absolute top-0 left-0 h-full bg-green-500 rounded" style={{ width: `${audio.sentiment.score}%` }}></div>
                     </div>
-                  </div></>
-              
-            ) : 'Aucun sentiment détecté'}
+                  </div>
+                </>
+              ) : 'Aucun sentiment détecté'}
+            </div>
           </div>
-        </div>
         </div>
         <div className="flex space-x-4">
           <button
@@ -177,6 +195,11 @@ export default function Audio() {
           </button>
           <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">Supprimer</button>
         </div>
+        {progress && (
+          <div className="mt-4 p-4 bg-gray-100 rounded-md">
+            <p className="text-center text-gray-700">Progress: {progress}</p>
+          </div>
+        )}
       </div>
     </div>
   );
