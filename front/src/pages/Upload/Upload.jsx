@@ -15,9 +15,16 @@ const Upload = () => {
     if (audioFile) {
       const formData = new FormData();
       formData.append('file', audioFile);
-      const entries = Array.from(formData.entries()).map(([key, value]) => `${key}: ${value.name || value}`);
     }
   }, [audioFile]);
+
+  const handleStop = async (blobUrl) => {
+    const audioBlob = await fetch(blobUrl).then((r) => r.blob());
+    const uniqueSuffix = Date.now();
+    const audioFile = new File([audioBlob], `recording_${uniqueSuffix}.wav`, { type: 'audio/wav' });
+
+    setAudioFile(audioFile);
+  };
 
   const handleUpload = async () => {
     setLoading(true);
@@ -104,6 +111,7 @@ const Upload = () => {
         <h2>Enregistrer un Audio :</h2>
         <ReactMediaRecorder
           audio
+          onStop={mediaBlobUrl=>handleStop(mediaBlobUrl)}
           render={({ startRecording, stopRecording, mediaBlobUrl }) => (
             <div>
               <button 

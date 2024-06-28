@@ -5,6 +5,8 @@
 
 ## Comment lancer le projet:
 
+Il faut ollama en local a fin de faire tourner phi3 
+
 - Backend:
     ```
     cd back

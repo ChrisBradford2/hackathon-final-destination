@@ -11,6 +11,7 @@ export default function Audio() {
   const [error, setError] = useState(null);
   const [analyseLoading, setAnalyseLoading] = useState(false);
   const [isTranscriptionOpen, setIsTranscriptionOpen] = useState(true);
+  const [showRawTranscription, setShowRawTranscription] = useState(false);
 
   const fetchAudio = async () => {
     setLoading(true);
@@ -116,6 +117,37 @@ export default function Audio() {
           <span className={audio.isInNeed ? 'text-green-500' : 'text-red-500'}>
             {audio.isInNeed ? 'Oui' : 'Non'}
           </span>
+          <button
+            className="flex items-center space-x-1 focus:outline-none"
+            onClick={() => setShowRawTranscription(!showRawTranscription)}
+          >
+            <span>Show Transcription</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className={`w-6 h-6 transition-transform ${
+                showRawTranscription ? 'transform rotate-180' : ''
+              }`}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m19.5 8.25-7.5 7.5-7.5-7.5"
+              />
+            </svg>
+          </button>
+          {showRawTranscription && (
+            <div className="mt-2">
+              <span className="font-semibold">Raw Transcription:</span>{' '}
+              {audio.raw_transcription ? audio.raw_transcription : 'None'}
+            </div>
+          )}
+        </div>
+        <div>
+          <span className="font-semibold">Transcription:</span> {audio.transcription ? audio.transcription : 'None'}
         </div>
         <div className="flex flex-col space-y-4">
         <div className="flex items-center justify-between space-x-3">

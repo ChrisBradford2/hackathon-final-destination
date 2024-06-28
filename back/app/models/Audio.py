@@ -7,6 +7,7 @@ class Audio(db.Model):
     audio = db.Column(db.String(120), nullable=False)
     isAnalysed = db.Column(db.Boolean, default=False)
     transcription = db.Column(db.String, nullable=True)
+    raw_transcription = db.Column(db.String, nullable=True)
     isInNeed = db.Column(db.Boolean, default=False)
 
     filename = db.Column(db.String(255), nullable=False)
