@@ -34,7 +34,7 @@ def fixError_transcription(transcription):
     system_prompt = """Vous êtes un assistant avancé de raffinement de texte spécialisé dans l'analyse des transcriptions audio pour en vérifier la cohérence et l'exactitude.
         Votre tâche consiste à examiner la transcription pour y détecter d'éventuelles erreurs, telles que des mots mal transcrits mais qui sonnent similaires aux mots corrects.
         Fixez la transcription et retournes la version plsu pertinence.
-        Le retour doit être au format texte brut et impérativement en langue française."""
+        Le retour doit être au format texte brut contenant seulement la transcription et impérativement en langue française."""
 
     messages = [
         {"role": "system", "content": system_prompt},
@@ -76,7 +76,7 @@ def refine_transcription(transcription):
     Votre tâche consiste à examiner la transcription pour y détecter d'éventuelles erreurs, telles que des mots mal transcrits mais qui sonnent similaires aux mots corrects.
     Faites un résumé de la transcription et donnez votre avis sur les sentiments exprimés par le patient.
     Votre objectif est de produire l'analyse de sentiment la plus précise et contextuellement appropriée possible.
-    Le retour doit être au format texte brut et impérativement en langue française."""
+    Le retour doit être au format texte brut contenant seulement le résumé et impérativement en langue française."""
 
     messages = [
         {"role": "system", "content": system_prompt},
