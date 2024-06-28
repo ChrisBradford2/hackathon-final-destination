@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, ChevronUpIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/solid';
+import SentimentIndicator from '../../components/Icon/SentimentIndicator';
 
 export default function Audio() {
   const { id } = useParams();
@@ -54,6 +55,23 @@ export default function Audio() {
     }
   };
 
+  const getProgressBar = (label) => {
+    switch (label) {
+      case 'NEUTRE':
+        return <div className="absolute top-0 left-0 h-full bg-orange-500 rounded" style={{ width: `50%` }}></div>
+      case 'POSITIF':
+        return <div className="absolute top-0 left-0 h-full bg-green-500 rounded" style={{ width: `70%` }}></div>
+      case 'TRES_POSITIF':
+        return <div className="absolute top-0 left-0 h-full bg-green-700 rounded" style={{ width: `90%` }}></div>
+      case 'NEGATIF':
+        return <div className="absolute top-0 left-0 h-full bg-red-500 rounded" style={{ width: `30%` }}></div>
+      case 'TRES_NEGATIF':
+        return <div className="absolute top-0 left-0 h-full bg-red-700 rounded" style={{ width: `10%` }}></div>
+      default:
+        return <div className="absolute top-0 left-0 h-full rounded" style={{ width: `0%` }}></div>
+    }
+  };
+
   useEffect(() => {
     fetchAudio();
   }, []);
@@ -70,8 +88,10 @@ export default function Audio() {
     audio.sentiment.score = (audio.sentiment.score * 100).toFixed(2);
   }
 
+  console.log(audio);
+
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg mt-6 shadow-2xl">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Audio Details</h1>
         <div className={`flex items-center ${audio.isAnalysed ? 'text-green-500' : 'text-red-500'}`}>
@@ -114,14 +134,38 @@ export default function Audio() {
         <div className="flex space-x-8 justify-between">
         <div>
           <span className="font-semibold">Besoin d'aide: </span>
-          <span className={audio.isInNeed ? 'text-green-500' : 'text-red-500'}>
-            {audio.isInNeed ? 'Oui' : 'Non'}
+          <span className={audio.isInNeed ? 'text-green-500' : (audio.isInNeed === false ? 'text-red-500' : 'text-gray-500')}>
+            {audio.isInNeed ? 'Oui' : (audio.isInNeed === false ? 'Non' : 'Aucune analyse effectuée')}
           </span>
-          <button
+        </div>
+        <div className="flex flex-col space-y-4">
+          <div className="flex items-center justify-between space-x-3">
+              <span className="font-semibold">Sentiment:</span> 
+              {audio.sentiment ? (
+                  <>
+                    <div className="flex items-center space-x-1">
+                      <p className="flex items-center">
+                        <SentimentIndicator sentiment={audio.sentiment.label} />
+                      </p>
+                    </div>
+                    <div className="flex items-center">
+                      <p><span className="font-medium mr-2">Score:</span></p>
+                      <div className="relative w-40 h-4 bg-gray-200 rounded">
+                        {getProgressBar(audio.sentiment.label)}
+                        {/* <div className="absolute top-0 left-0 h-full bg-green-500 rounded" style={{ width: `${audio.sentiment.score}%` }}></div> */}
+                      </div>
+                    </div>
+                  </>
+                
+              ) : 'Aucune analyse effectuée'}
+          </div>
+        </div>
+        </div>
+        <button
             className="flex items-center space-x-1 focus:outline-none"
             onClick={() => setShowRawTranscription(!showRawTranscription)}
           >
-            <span>Show Transcription</span>
+            <span>Voir la transcription compléte</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -141,33 +185,14 @@ export default function Audio() {
           </button>
           {showRawTranscription && (
             <div className="mt-2">
-              <span className="font-semibold">Raw Transcription:</span>{' '}
-              {audio.raw_transcription ? audio.raw_transcription : 'None'}
+              <textarea
+              readOnly
+              className="w-full mt-2 p-2 border rounded"
+              rows={5}
+              value={audio.raw_transcription ? audio.raw_transcription : 'Aucune transcription'}
+            />
             </div>
           )}
-        </div>
-        <div>
-          <span className="font-semibold">Transcription:</span> {audio.transcription ? audio.transcription : 'None'}
-        </div>
-        <div className="flex flex-col space-y-4">
-        <div className="flex items-center justify-between space-x-3">
-            <span className="font-semibold">Sentiment:</span> 
-            {audio.sentiment ? (
-                <><div className="flex items-center space-x-2">
-                  <p className="flex items-center">
-                    <CheckCircleIcon className="w-5 h-5 text-green-500 mr-1" /> {audio.sentiment.label}
-                  </p>
-                </div><div className="flex items-center">
-                    <p><span className="font-medium mr-2">Score:</span></p>
-                    <div className="relative w-40 h-4 bg-gray-200 rounded">
-                      <div className="absolute top-0 left-0 h-full bg-green-500 rounded" style={{ width: `${audio.sentiment.score}%` }}></div>
-                    </div>
-                  </div></>
-              
-            ) : 'Aucun sentiment détecté'}
-          </div>
-        </div>
-        </div>
         <div className="flex space-x-4">
           <button
             onClick={handleAnalyse}
@@ -175,7 +200,7 @@ export default function Audio() {
             disabled={analyseLoading}>
             {analyseLoading ? 'Analysing...' : audio.isAnalysed ? 'Re-analyse' : 'Analyse'}
           </button>
-          <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">Supprimer</button>
+          <button onClick={handleDelete} disabled={analyseLoading} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">Supprimer</button>
         </div>
       </div>
     </div>
