@@ -6,5 +6,5 @@ class Sentiments(db.Model):
     label = db.Column(db.Enum(Label), nullable=False)
     score = db.Column(db.Float, nullable=False)
     
-    # Clé étrangère reliant à Audio
+    # Foreign key linking to Audio
     audio_id = db.Column(db.Integer, db.ForeignKey('audio.id'), nullable=False)

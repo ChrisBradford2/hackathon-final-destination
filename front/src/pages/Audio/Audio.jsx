@@ -19,7 +19,7 @@ export default function Audio() {
   const [showRawTranscription, setShowRawTranscription] = useState(false);
 
   useEffect(() => {
-    const socket = io('http://localhost:5001');  // Assurez-vous que l'URL correspond à votre backend
+    const socket = io('http://localhost:5001');
 
     socket.on('processing_update', (data) => {
       if (data.audio_id === parseInt(id)) {

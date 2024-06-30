@@ -6,7 +6,7 @@ from flask import Blueprint, request, jsonify, current_app
 from .transcription import transcribe_audio, transcribe_audio_from_url
 from .sentiment_analysis import analyze_sentiment, refine_transcription, fixError_transcription
 from .upload_file import upload_file
-from . import db, socketio  # Import socketio
+from . import db, socketio
 
 main = Blueprint('main', __name__)
 

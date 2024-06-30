@@ -4,7 +4,7 @@ const DropdownRadioTab = () => {
   const [showRadioDropdown, setShowRadioDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Fermer le dropdown si l'utilisateur clique en dehors de celui-ci
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -188,7 +188,6 @@ const DropdownRadioTab = () => {
                 </label>
               </div>
             </li>
-            {/* Autres options de votre dropdown */}
           </ul>
         </div>
       )}

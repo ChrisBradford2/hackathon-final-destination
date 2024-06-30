@@ -11,19 +11,17 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Nombre d'éléments par page
+  const itemsPerPage = 10; //Number of items per page
   const [selectedRows, setSelectedRows] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
   const [selectAll, setSelectAll] = useState(false);
 
-  // Fonction pour récupérer les audios depuis l'API et les trier par numeroOperation décroissant
   const fetchAudios = async () => {
     setLoading(true);
     try {
       const response = await fetch('http://localhost:5001/audios');
       const data = await response.json();
-      // Tri par numeroOperation en ordre décroissant
       data.sort((a, b) => b.id - a.id);
       setAudios(data);
       setLoading(false);
@@ -34,12 +32,11 @@ const Home = () => {
     }
   };
 
-  // Appel de fetchAudios au montage du composant
   useEffect(() => {
     fetchAudios();
   }, []);
 
-  // Gestion de la sélection de toutes les lignes
+  // Manage the selection of all rows
   const handleSelectAll = () => {
     setSelectAll(!selectAll);
     if (!selectAll) {
@@ -49,7 +46,7 @@ const Home = () => {
     }
   };
 
-  // Gestion de la sélection d'une ligne individuelle
+  // Manage the selection of a row
   const handleSelectRow = (numeroOperation) => {
     if (selectedRows.includes(numeroOperation)) {
       setSelectedRows(selectedRows.filter((rowId) => rowId !== numeroOperation));
@@ -58,18 +55,17 @@ const Home = () => {
     }
   };
 
-  // Fonction pour ouvrir le modal
   const openModal = (content) => {
     setModalContent(content);
     setShowModal(true);
   };
 
-  // Fonction pour gérer le changement de page
+  // Manage the pagination
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  // Calcul des valeurs de pagination
+  // Get current items
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const totalItems = audios.length;

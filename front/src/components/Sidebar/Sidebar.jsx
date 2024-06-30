@@ -5,11 +5,11 @@ import { faCalendarAlt, faStickyNote, faTasks, faComments, faEnvelope, faClipboa
 
 const Sidebar = ({ setSidebarWidth }) => {
   const handleMouseEnter = () => {
-    setSidebarWidth(256); // largeur de la sidebar sur hover
+    setSidebarWidth(256); // Size of the sidebar when expanded
   };
 
   const handleMouseLeave = () => {
-    setSidebarWidth(112); // largeur par défaut de la sidebar
+    setSidebarWidth(112); // Size of the sidebar when collapsed
   };
   return (
     <nav className="sidebar" onMouseEnter={handleMouseEnter}

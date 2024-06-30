@@ -103,7 +103,7 @@ def refine_transcription(transcription):
             response_data = json_py.loads(response_text)
             generated_text = response_data["message"]["content"]
             app.logger.info(f"Extracted refined transcription: {generated_text}")
-            return generated_text  # Always return a string
+            return generated_text
         except (json_py.JSONDecodeError, KeyError) as e:
             app.logger.warning(f"Failed to parse response as JSON or extract refined transcription: {str(e)}")
             return "Failed to parse response"
@@ -133,10 +133,3 @@ def analyze_retour(text):
     risk_pipeline = pipeline("text-classification", model="nlptown/bert-base-multilingual-uncased-sentiment")
     result = risk_pipeline(text)
     return result[0]
-
-
-
-
-
-
-

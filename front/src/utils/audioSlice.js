@@ -1,4 +1,3 @@
-// utils/audioSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 
@@ -9,7 +8,7 @@ const audioSlice = createSlice({
     loading: false,
     error: null,
     progress: {},
-    analyseLoading: false,  // État de chargement pour l'analyse
+    analyseLoading: false,  // State for the loading of the analysis
   },
   reducers: {
     setAudio(state, action) {
@@ -25,7 +24,7 @@ const audioSlice = createSlice({
       const { audioId, status } = action.payload;
       state.progress[audioId] = status;
     },
-    setAnalyseLoading(state, action) {  // Réducteur pour l'état de chargement de l'analyse
+    setAnalyseLoading(state, action) {  // Reducer for the loading of the analysis
       state.analyseLoading = action.payload;
     },
   },

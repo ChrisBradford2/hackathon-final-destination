@@ -9,7 +9,7 @@ const Header = () => {
   return (
     <header className="header">
       <Link to="/hackathon-final-destination/" className="logo">
-        CalMedia
+        CalMedica
       </Link>
       <div className="search-bar">
         <input type="text" placeholder="Rechercher un patient" />
