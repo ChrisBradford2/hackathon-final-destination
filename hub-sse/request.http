@@ -1,0 +1,12 @@
+POST http://localhost:3000/events
+Authorization: Bearer aJC9Dg4i9qJCS6b7IN83ce7mYwxNhT0d
+Content-Type: application/json
+
+{
+    "destination": "FERFERFGERGVRE",
+    "type": "progress",
+    "data": {
+        "analyseId": 235467,
+        "status": "FINISHED"
+    }
+}
